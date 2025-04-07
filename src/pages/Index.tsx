@@ -10,7 +10,7 @@ import {
   loadModel,
   detectFaceLandmarks,
   FaceShapeResult as FaceShapeResultType
-} from '@/services/faceShapeAnalyzer';
+} from '@/services/faceShape';
 
 const Index = () => {
   const [selectedImage, setSelectedImage] = useState<{ file: File; url: string } | null>(null);

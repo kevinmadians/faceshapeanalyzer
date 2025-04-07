@@ -44,8 +44,8 @@ export async function saveAnalysisResult(result: FaceShapeResult): Promise<strin
       .insert({
         session_id: sessionId,
         primary_shape: result.primaryShape,
-        scores: result.scores,
-        tips: result.tips,
+        scores: result.scores as any, // Cast scores to any to satisfy Json type
+        tips: result.tips as any, // Cast tips to any to satisfy Json type
         image_url: imageUrl
       })
       .select()

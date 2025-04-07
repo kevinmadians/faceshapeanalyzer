@@ -2,6 +2,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import { v4 as uuidv4 } from 'uuid';
 import { FaceShapeResult } from '@/services/faceShape/types';
+import { Database } from '@/integrations/supabase/types';
 
 export async function saveAnalysisResult(result: FaceShapeResult): Promise<string> {
   try {
@@ -37,7 +38,7 @@ export async function saveAnalysisResult(result: FaceShapeResult): Promise<strin
       }
     }
     
-    // Save analysis data to database
+    // Save analysis data to database with proper typing
     const { data, error } = await supabase
       .from('face_analysis')
       .insert({
@@ -55,7 +56,7 @@ export async function saveAnalysisResult(result: FaceShapeResult): Promise<strin
       throw error;
     }
     
-    return data.id;
+    return data?.id || '';
   } catch (error) {
     console.error("Failed to save analysis:", error);
     throw error;

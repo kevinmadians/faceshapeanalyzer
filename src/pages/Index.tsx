@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import ImageUploader from '@/components/ImageUploader';
 import LoadingScreen from '@/components/LoadingScreen';
@@ -5,9 +6,8 @@ import FaceShapeResult from '@/components/FaceShapeResult';
 import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
 import { Camera, RefreshCw } from 'lucide-react';
+import { toast as sonnerToast } from 'sonner';
 import {
-  initializeTensorFlow,
-  loadModel,
   detectFaceLandmarks,
   FaceShapeResult as FaceShapeResultType
 } from '@/services/faceShape';
@@ -17,6 +17,7 @@ const Index = () => {
   const [loading, setLoading] = useState(false);
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [loadingMessage, setLoadingMessage] = useState('Initializing...');
+  const [modelLoading, setModelLoading] = useState(true);
   const [modelReady, setModelReady] = useState(false);
   const [result, setResult] = useState<FaceShapeResultType | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -25,21 +26,34 @@ const Index = () => {
   useEffect(() => {
     const prepareModel = async () => {
       try {
+        setModelLoading(true);
         setLoadingMessage('Initializing TensorFlow.js...');
-        await initializeTensorFlow(setLoadingProgress);
         
-        setLoadingMessage('Loading face detection model...');
-        // Pre-load the model in the background
-        await loadModel(setLoadingProgress);
-        setModelReady(true);
-      } catch (error) {
-        console.error("Failed to initialize or load model:", error);
-        setError("Failed to load face detection model. Please try using a different browser or device.");
-        toast({
-          title: "Error Preparing Model",
-          description: error instanceof Error ? error.message : "Unknown error occurred",
-          variant: "destructive",
+        // Load the model in the background without blocking the UI render
+        import('@/services/faceShape').then(async ({ initializeTensorFlow, loadModel }) => {
+          try {
+            await initializeTensorFlow(setLoadingProgress);
+            setLoadingMessage('Loading face detection model...');
+            // Pre-load the model in the background
+            await loadModel(setLoadingProgress);
+            setModelReady(true);
+            sonnerToast.success('Face detection model loaded successfully!');
+          } catch (error) {
+            console.error("Failed to initialize or load model:", error);
+            setError("Model loading failed. You can still upload an image, but analysis may not work.");
+            toast({
+              title: "Model Loading Warning",
+              description: "Face detection model couldn't be loaded. Some features may be limited.",
+              variant: "destructive",
+            });
+          } finally {
+            setModelLoading(false);
+          }
         });
+      } catch (error) {
+        console.error("Failed to load module:", error);
+        setError("Failed to load application modules.");
+        setModelLoading(false);
       }
     };
 
@@ -69,6 +83,12 @@ const Index = () => {
     setError(null);
     
     try {
+      if (!modelReady) {
+        // If model isn't ready, try loading it now
+        const { loadModel } = await import('@/services/faceShape');
+        await loadModel(setLoadingProgress);
+      }
+      
       // Run face detection
       const detectionResult = await detectFaceLandmarks(selectedImage.url, setLoadingProgress);
       
@@ -84,9 +104,6 @@ const Index = () => {
       }
       
       setResult(detectionResult);
-      
-      // In a real-world application, you would save results to Supabase here
-      // For this demo, we'll just use local state
       
     } catch (error) {
       console.error("Error during face analysis:", error);
@@ -130,6 +147,13 @@ const Index = () => {
           </div>
         )}
         
+        {modelLoading && (
+          <div className="max-w-xl mx-auto mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg text-blue-700">
+            <p className="font-medium">Loading face detection model...</p>
+            <p className="text-sm mt-2">You can upload your image while we prepare the model.</p>
+          </div>
+        )}
+        
         {!result ? (
           <>
             <div className="max-w-xl mx-auto mb-8">
@@ -141,7 +165,7 @@ const Index = () => {
                 <Button 
                   onClick={handleAnalyze} 
                   size="lg" 
-                  disabled={loading || !modelReady}
+                  disabled={loading}
                   className="px-8"
                 >
                   {loading ? "Analyzing..." : "Analyze My Face Shape"}

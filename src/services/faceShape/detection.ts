@@ -12,6 +12,7 @@ export async function detectFaceLandmarks(
   try {
     const model = getModel();
     if (!model) {
+      console.log("Model not loaded, attempting to load it now...");
       await loadModel(progressCallback);
     }
     
@@ -21,22 +22,33 @@ export async function detectFaceLandmarks(
     const img = new Image();
     await new Promise((resolve, reject) => {
       img.onload = resolve;
-      img.onerror = reject;
+      img.onerror = (e) => {
+        console.error("Error loading image:", e);
+        reject(new Error("Failed to load image. Please try a different one."));
+      };
       img.src = imageUrl;
     });
     
     progressCallback(40);
     
     const faceDetectionModel = getModel();
+    if (!faceDetectionModel) {
+      throw new Error("Face detection model is not available. Please refresh and try again.");
+    }
     
     // Use the face detection model
     let predictions;
-    if (typeof faceDetectionModel.estimateFaces === 'function') {
-      // Older API
-      predictions = await faceDetectionModel.estimateFaces(img);
-    } else {
-      // Newer API
-      predictions = await faceDetectionModel.detect(img);
+    try {
+      if (typeof faceDetectionModel.estimateFaces === 'function') {
+        // Older API
+        predictions = await faceDetectionModel.estimateFaces(img);
+      } else {
+        // Newer API
+        predictions = await faceDetectionModel.detect(img);
+      }
+    } catch (error) {
+      console.error("Error during face detection:", error);
+      throw new Error("Failed to detect faces in the image. Please try a clearer photo.");
     }
     
     progressCallback(60);
@@ -59,6 +71,11 @@ export async function detectFaceLandmarks(
     } else if (face.mesh) {
       // Another possible format
       rawLandmarks = face.mesh;
+    }
+    
+    if (!rawLandmarks || rawLandmarks.length === 0) {
+      console.log("No valid landmarks found");
+      throw new Error("Failed to extract facial landmarks. Please try a clearer photo with a front-facing view.");
     }
     
     // Convert raw landmarks to {x, y} format
@@ -86,6 +103,6 @@ export async function detectFaceLandmarks(
     
   } catch (error) {
     console.error("Error detecting face landmarks:", error);
-    throw new Error("Failed to analyze face shape. Please try again with a clearer image.");
+    throw new Error(error instanceof Error ? error.message : "Failed to analyze face shape. Please try again with a clearer image.");
   }
 }

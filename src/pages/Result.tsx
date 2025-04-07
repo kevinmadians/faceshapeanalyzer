@@ -154,7 +154,7 @@ const Result = () => {
                 <h3 className="text-lg font-semibold mb-3">Face Shape Match Percentages</h3>
                 <div className="space-y-4">
                   {Object.entries(formattedResult.scores)
-                    .sort(([_, a], [__, b]) => b - a)
+                    .sort(([_, a], [__, b]) => Number(b) - Number(a))
                     .map(([shape, score], index) => (
                       <div key={shape} className="space-y-1">
                         <div className="flex justify-between text-sm mb-1">
@@ -164,12 +164,12 @@ const Result = () => {
                             }`} />
                             {shape}
                           </span>
-                          <span className="font-semibold">{Math.round((score as number) * 100)}%</span>
+                          <span className="font-semibold">{Math.round(Number(score) * 100)}%</span>
                         </div>
                         <div className="h-2.5 w-full bg-muted rounded-full overflow-hidden">
                           <div 
                             className={`h-full ${shape === formattedResult.primary ? 'bg-primary' : 'bg-muted-foreground/50'}`}
-                            style={{ width: `${(score as number) * 100}%` }} 
+                            style={{ width: `${Number(score) * 100}%` }} 
                           />
                         </div>
                         {index === 0 && (

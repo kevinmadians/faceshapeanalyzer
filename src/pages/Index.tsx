@@ -17,22 +17,28 @@ const Index = () => {
   const [selectedImage, setSelectedImage] = useState<{ file: File; url: string } | null>(null);
   const [loading, setLoading] = useState(false);
   const [loadingProgress, setLoadingProgress] = useState(0);
+  const [loadingMessage, setLoadingMessage] = useState('Initializing...');
   const [modelReady, setModelReady] = useState(false);
   const [result, setResult] = useState<FaceShapeResultType | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
     const prepareModel = async () => {
       try {
-        await initializeTensorFlow();
+        setLoadingMessage('Initializing TensorFlow.js...');
+        await initializeTensorFlow(setLoadingProgress);
+        
+        setLoadingMessage('Loading face detection model...');
         // Pre-load the model in the background
         await loadModel(setLoadingProgress);
         setModelReady(true);
       } catch (error) {
-        console.error("Failed to initialize TensorFlow.js or load model:", error);
+        console.error("Failed to initialize or load model:", error);
+        setError("Failed to load face detection model. Please try using a different browser or device.");
         toast({
           title: "Error Preparing Model",
-          description: "Failed to initialize the face detection model. Please try refreshing the page.",
+          description: error instanceof Error ? error.message : "Unknown error occurred",
           variant: "destructive",
         });
       }
@@ -45,6 +51,7 @@ const Index = () => {
     setSelectedImage({ file, url: imageUrl });
     // Reset any previous results
     setResult(null);
+    setError(null);
   };
   
   const handleAnalyze = async () => {
@@ -59,6 +66,8 @@ const Index = () => {
     
     setLoading(true);
     setLoadingProgress(0);
+    setLoadingMessage('Analyzing your face shape...');
+    setError(null);
     
     try {
       // Run face detection
@@ -70,6 +79,7 @@ const Index = () => {
           description: "We couldn't detect a clear face in your image. Please try a different photo with a clear, front-facing view.",
           variant: "destructive",
         });
+        setError("No face detected in the image. Please upload a clear, front-facing photo.");
         setLoading(false);
         return;
       }
@@ -81,9 +91,11 @@ const Index = () => {
       
     } catch (error) {
       console.error("Error during face analysis:", error);
+      const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
+      setError(`Analysis failed: ${errorMessage}`);
       toast({
         title: "Analysis Failed",
-        description: "An error occurred while analyzing your face shape. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -94,6 +106,7 @@ const Index = () => {
   const handleReset = () => {
     setSelectedImage(null);
     setResult(null);
+    setError(null);
   };
 
   return (
@@ -111,6 +124,13 @@ const Index = () => {
       </header>
       
       <main className="container px-4 pb-16">
+        {error && (
+          <div className="max-w-xl mx-auto mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
+            <p className="font-medium">{error}</p>
+            <p className="text-sm mt-2">Please try uploading a different photo or refresh the page.</p>
+          </div>
+        )}
+        
         {!result ? (
           <>
             <div className="max-w-xl mx-auto mb-8">
@@ -163,7 +183,11 @@ const Index = () => {
         </div>
       </footer>
       
-      <LoadingScreen isVisible={loading} progress={loadingProgress} />
+      <LoadingScreen 
+        isVisible={loading} 
+        progress={loadingProgress}
+        message={loadingMessage} 
+      />
     </div>
   );
 };

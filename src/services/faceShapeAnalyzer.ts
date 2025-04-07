@@ -1,6 +1,6 @@
 
-import * as faceLandmarksDetection from '@tensorflow-models/face-landmarks-detection';
 import * as tf from '@tensorflow/tfjs';
+// Use dynamic import to avoid TypeScript errors
 import { v4 as uuidv4 } from 'uuid';
 
 export interface FaceShapeResult {
@@ -129,7 +129,9 @@ export const SHAPE_TIPS = {
 };
 
 // Initialize TensorFlow.js
-export const initializeTensorFlow = async () => {
+export const initializeTensorFlow = async (setProgress?: (progress: number) => void) => {
+  if (setProgress) setProgress(5);
+  
   await tf.ready();
   // WebGL backend is faster, but we'll have a CPU fallback
   try {
@@ -139,21 +141,33 @@ export const initializeTensorFlow = async () => {
     console.log('WebGL backend not available, falling back to CPU');
     await tf.setBackend('cpu');
   }
+  
+  if (setProgress) setProgress(10);
 };
 
 // Load the face landmarks detection model
-let model: faceLandmarksDetection.FaceLandmarksDetector | null = null;
+let model: any = null;
 
 export const loadModel = async (setProgress: (progress: number) => void): Promise<void> => {
-  setProgress(10);
-
+  setProgress(20);
+  
   if (!model) {
-    setProgress(20);
-    model = await faceLandmarksDetection.load(
-      faceLandmarksDetection.SupportedPackages.mediapipeFacemesh,
-      { maxFaces: 1 }
-    );
-    setProgress(60);
+    try {
+      // Dynamically import the module to avoid TypeScript errors
+      const faceLandmarksDetection = await import('@tensorflow-models/face-landmarks-detection');
+      setProgress(40);
+      
+      console.log("Loading face landmarks detection model...");
+      model = await faceLandmarksDetection.load(
+        faceLandmarksDetection.SupportedPackages.mediapipeFacemesh,
+        { maxFaces: 1 }
+      );
+      console.log("Model loaded successfully");
+      setProgress(60);
+    } catch (error) {
+      console.error("Error loading face landmarks detection model:", error);
+      throw new Error(`Failed to load face detection model: ${error instanceof Error ? error.message : String(error)}`);
+    }
   }
   
   setProgress(70);
@@ -174,30 +188,35 @@ export const detectFaceLandmarks = async (
     // Load the image
     const img = new Image();
     img.src = imageUrl;
-    await new Promise((resolve) => {
+    await new Promise((resolve, reject) => {
       img.onload = resolve;
+      img.onerror = () => reject(new Error('Failed to load image'));
+      // Set a timeout just in case
+      setTimeout(() => reject(new Error('Image load timed out')), 30000);
     });
 
     setProgress(80);
     
     // Run detection
-    const predictions = await model!.estimateFaces({
+    console.log("Running face detection...");
+    const predictions = await model.estimateFaces({
       input: img,
     });
 
-    if (predictions.length === 0) {
+    if (!predictions || predictions.length === 0) {
       console.error('No face detected');
       return null;
     }
 
     setProgress(90);
+    console.log("Face detected, analyzing shape...");
 
     // Get the first face prediction
     const face = predictions[0];
     
     // Get normalized landmarks (values between 0 and 1)
     // MediaPipe Face Mesh returns 468 landmarks
-    const landmarkPoints = face.scaledMesh.map(point => ({
+    const landmarkPoints = face.scaledMesh.map((point: number[]) => ({
       x: point[0] / img.width,
       y: point[1] / img.height
     }));
@@ -232,11 +251,12 @@ export const detectFaceLandmarks = async (
     };
 
     setProgress(100);
+    console.log("Face shape analysis complete:", primaryShape);
     
     return result;
   } catch (error) {
     console.error('Error detecting face landmarks:', error);
-    return null;
+    throw new Error(`Face detection failed: ${error instanceof Error ? error.message : String(error)}`);
   }
 };
 

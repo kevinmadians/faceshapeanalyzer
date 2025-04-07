@@ -1,8 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getAnalysisById } from '@/services/supabaseService';
 import FaceShapeResult from '@/components/FaceShapeResult';
+import FaceShapeRadarChart from '@/components/FaceShapeRadarChart';
 import LoadingScreen from '@/components/LoadingScreen';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
@@ -53,7 +53,6 @@ const Result = () => {
         url: window.location.href
       }).catch((err) => console.error("Error sharing:", err));
     } else {
-      // Fallback - copy to clipboard
       navigator.clipboard.writeText(window.location.href).then(() => {
         toast({
           title: "Link copied!",
@@ -86,7 +85,6 @@ const Result = () => {
     );
   }
   
-  // Convert database format to component format
   const formattedResult = {
     primary: result.primary_shape,
     scores: result.scores,
@@ -114,7 +112,6 @@ const Result = () => {
       </header>
       
       <main className="container px-4 pb-16">
-        {/* Analysis Details */}
         <div className="mb-6 bg-gradient-to-r from-primary/5 to-primary/10 p-4 rounded-lg shadow-inner">
           <div className="flex items-center gap-2">
             <Info className="h-4 w-4 text-primary" />
@@ -125,82 +122,44 @@ const Result = () => {
           </p>
         </div>
         
-        {/* Face Shape Analysis Card - Moved above tabs and visible by default */}
         <Card className="mb-8 border-primary/20 shadow-lg">
           <CardHeader className="bg-gradient-to-r from-primary/10 to-primary/5 border-b border-primary/10">
             <CardTitle className="flex items-center gap-2 text-xl">
               <span className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
                 <Info className="h-4 w-4 text-primary" />
               </span>
-              Face Shape Analysis
+              Face Shape Match
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-6">
-            <div className="flex flex-col md:flex-row gap-6">
-              <div className="md:w-1/3 flex justify-center">
-                <div className="relative rounded-md overflow-hidden w-64 h-64 shadow-lg border border-primary/20">
-                  <img 
-                    src={result.image_url} 
-                    alt="Your face shape" 
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3 text-white text-center">
-                    <span className="font-semibold capitalize">{formattedResult.primary} Face</span>
-                  </div>
-                </div>
-              </div>
+            <div className="flex flex-col items-center text-center mb-4">
+              <p className="text-lg mb-2">Your primary face shape is:</p>
+              <h2 className="text-4xl font-bold text-primary mb-6 capitalize">{formattedResult.primary}</h2>
               
-              <div className="md:w-2/3">
-                <h3 className="text-lg font-semibold mb-3">Face Shape Match Percentages</h3>
-                <div className="space-y-4">
-                  {Object.entries(formattedResult.scores)
-                    .sort(([_, a], [__, b]) => Number(b) - Number(a))
-                    .map(([shape, score], index) => (
-                      <div key={shape} className="space-y-1">
-                        <div className="flex justify-between text-sm mb-1">
-                          <span className="capitalize font-medium flex items-center gap-1">
-                            <div className={`w-3 h-3 rounded-full ${
-                              shape === formattedResult.primary ? 'bg-primary' : 'bg-muted'
-                            }`} />
-                            {shape}
-                          </span>
-                          <span className="font-semibold">{Math.round(Number(score) * 100)}%</span>
-                        </div>
-                        <div className="h-2.5 w-full bg-muted rounded-full overflow-hidden">
-                          <div 
-                            className={`h-full ${shape === formattedResult.primary ? 'bg-primary' : 'bg-muted-foreground/50'}`}
-                            style={{ width: `${Number(score) * 100}%` }} 
-                          />
-                        </div>
-                        {index === 0 && (
-                          <p className="text-xs text-muted-foreground mt-1 italic">
-                            Your primary face shape based on our analysis
-                          </p>
-                        )}
-                      </div>
-                    ))
-                  }
+              <div className="w-full max-w-md">
+                <FaceShapeRadarChart 
+                  scores={formattedResult.scores} 
+                  primaryShape={formattedResult.primary} 
+                />
+              </div>
+
+              <div className="mt-6 p-3 border rounded-lg bg-accent/30 flex gap-2 items-center max-w-lg mx-auto">
+                <div className="rounded-full bg-primary/20 p-1.5 flex-shrink-0">
+                  <Info className="h-4 w-4 text-primary" />
                 </div>
-                
-                <div className="mt-6 p-3 border rounded-lg bg-accent/30 flex gap-2 items-center">
-                  <div className="rounded-full bg-primary/20 p-1.5 flex-shrink-0">
-                    <Info className="h-4 w-4 text-primary" />
-                  </div>
-                  <p className="text-sm">
-                    {formattedResult.primary === 'Oval' && 'Oval face shapes are considered the most versatile, with balanced proportions allowing for a variety of styles.'}
-                    {formattedResult.primary === 'Round' && 'Round face shapes have soft angles with similar width and length, giving a youthful appearance.'}
-                    {formattedResult.primary === 'Square' && 'Square face shapes feature a strong jawline and are known for their angular, defined features.'}
-                    {formattedResult.primary === 'Heart' && 'Heart-shaped faces have a wider forehead that tapers to a narrower chin, creating a romantic silhouette.'}
-                    {formattedResult.primary === 'Oblong' && 'Oblong face shapes are longer than wide with a balanced appearance that benefits from styles adding width.'}
-                    {formattedResult.primary === 'Diamond' && 'Diamond face shapes feature high cheekbones with narrower forehead and jawline, creating striking angles.'}
-                  </p>
-                </div>
+                <p className="text-sm text-left">
+                  {formattedResult.primary === 'Oval' && 'Oval face shapes are considered the most versatile, with balanced proportions allowing for a variety of styles.'}
+                  {formattedResult.primary === 'Round' && 'Round face shapes have soft angles with similar width and length, giving a youthful appearance.'}
+                  {formattedResult.primary === 'Square' && 'Square face shapes feature a strong jawline and are known for their angular, defined features.'}
+                  {formattedResult.primary === 'Heart' && 'Heart-shaped faces have a wider forehead that tapers to a narrower chin, creating a romantic silhouette.'}
+                  {formattedResult.primary === 'Oblong' && 'Oblong face shapes are longer than wide with a balanced appearance that benefits from styles adding width.'}
+                  {formattedResult.primary === 'Diamond' && 'Diamond face shapes feature high cheekbones with narrower forehead and jawline, creating striking angles.'}
+                </p>
               </div>
             </div>
           </CardContent>
         </Card>
         
-        {/* Styling Recommendations section */}
         <FaceShapeResult 
           result={formattedResult} 
           imageUrl={result.image_url} 

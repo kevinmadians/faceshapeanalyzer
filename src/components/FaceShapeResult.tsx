@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Radar } from 'recharts';
 import { Check } from 'lucide-react';
 
 export interface FaceShapeData {

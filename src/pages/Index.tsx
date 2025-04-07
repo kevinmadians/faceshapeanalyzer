@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import ImageUploader from '@/components/ImageUploader';
 import LoadingScreen from '@/components/LoadingScreen';

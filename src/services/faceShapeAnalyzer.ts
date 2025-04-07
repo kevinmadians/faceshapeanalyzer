@@ -78,12 +78,18 @@ const FACE_SHAPES = {
 
 type FaceShape = typeof FACE_SHAPES[keyof typeof FACE_SHAPES];
 
+export interface FaceShapeTips {
+  hairstyles: string[];
+  glasses: string[];
+  makeup: string[];
+}
+
 // Type for face detection result
 export type FaceShapeResult = {
   primaryShape: FaceShape;
   scores: Record<FaceShape, number>;
-  landmarks: number[][];
-  tips: string[];
+  landmarks: { x: number, y: number }[];
+  tips: FaceShapeTips;
   imageUrl: string;
 };
 
@@ -127,19 +133,25 @@ export async function detectFaceLandmarks(
     }
     
     const face = predictions[0];
-    let landmarks: number[][] = [];
+    let rawLandmarks: number[][] = [];
     
     // Extract landmarks (compatible with both API versions)
     if (face.keypoints) {
       // Newer API
-      landmarks = face.keypoints.map((kp: any) => [kp.x, kp.y]);
+      rawLandmarks = face.keypoints.map((kp: any) => [kp.x, kp.y]);
     } else if (face.scaledMesh) {
       // Older API
-      landmarks = face.scaledMesh;
+      rawLandmarks = face.scaledMesh;
     } else if (face.mesh) {
       // Another possible format
-      landmarks = face.mesh;
+      rawLandmarks = face.mesh;
     }
+    
+    // Convert raw landmarks to {x, y} format
+    const landmarks = rawLandmarks.map(point => ({
+      x: point[0],
+      y: point[1]
+    }));
     
     progressCallback(80);
     
@@ -165,7 +177,7 @@ export async function detectFaceLandmarks(
 }
 
 // Analyze face shape based on landmarks (simplified implementation)
-function analyzeFaceShape(landmarks: number[][]): Record<FaceShape, number> {
+function analyzeFaceShape(landmarks: { x: number, y: number }[]): Record<FaceShape, number> {
   // This is a simplified version. In a real application,
   // you would use a more sophisticated algorithm to determine the face shape
   
@@ -205,49 +217,132 @@ function determinePrimaryShape(scores: Record<FaceShape, number>): FaceShape {
 }
 
 // Generate style tips based on face shape (simplified)
-function generateStyleTips(faceShape: FaceShape): string[] {
+function generateStyleTips(faceShape: FaceShape): FaceShapeTips {
   switch (faceShape) {
     case FACE_SHAPES.OVAL:
-      return [
-        "You can wear most hairstyles and accessories due to your well-balanced proportions.",
-        "Opt for eyeglasses with balanced proportions that don't upset your natural harmony.",
-        "Most hat styles will complement your face shape nicely."
-      ];
+      return {
+        hairstyles: [
+          "You can wear most hairstyles due to your well-balanced proportions.",
+          "Medium to long layers complement your face shape well.",
+          "Side or middle parts both work nicely with your face structure."
+        ],
+        glasses: [
+          "You can wear most eyeglasses styles with your balanced face.",
+          "Opt for glasses with balanced proportions that don't upset your natural harmony."
+        ],
+        makeup: [
+          "Light contouring to maintain your natural balance.",
+          "Focus on enhancing your features rather than reshaping.",
+          "Most makeup styles will complement your face well."
+        ]
+      };
     case FACE_SHAPES.ROUND:
-      return [
-        "Angular hairstyles that add height and length will complement your face shape.",
-        "Rectangle or geometric eyeglasses can add definition to your soft features.",
-        "Avoid round hats that echo your face shape; opt for styles that add angles."
-      ];
+      return {
+        hairstyles: [
+          "Angular hairstyles that add height and length will complement your face shape.",
+          "Long layers starting below the chin help elongate your face.",
+          "Side-swept bangs create asymmetry that slims a round face."
+        ],
+        glasses: [
+          "Rectangle or geometric eyeglasses can add definition to your soft features.",
+          "Angular frames help counterbalance the roundness of your face.",
+          "Avoid circular frames that echo your face shape."
+        ],
+        makeup: [
+          "Contour along the sides of your face and below your cheekbones.",
+          "Elongate your face with vertical highlight down the center.",
+          "Apply blush slightly below the apples of your cheeks for definition."
+        ]
+      };
     case FACE_SHAPES.SQUARE:
-      return [
-        "Softer hairstyles with layers around the face can soften angular features.",
-        "Round or oval eyeglasses help balance the natural angles of your face.",
-        "Hats with curved brims complement your strong jawline."
-      ];
+      return {
+        hairstyles: [
+          "Softer hairstyles with layers around the face can soften angular features.",
+          "Waves and curls help soften your strong jawline.",
+          "Side-swept styles and wispy bangs add softness to angular features."
+        ],
+        glasses: [
+          "Round or oval eyeglasses help balance the natural angles of your face.",
+          "Frames with curved edges complement your strong jawline.",
+          "Thin frames or rimless styles can soften your angular features."
+        ],
+        makeup: [
+          "Contour the corners of your forehead and jawline to soften angles.",
+          "Use rounder application techniques for blush.",
+          "Focus highlight on the center of your face to draw attention away from corners."
+        ]
+      };
     case FACE_SHAPES.HEART:
-      return [
-        "Medium-length hairstyles that add width at the jaw level balance your proportions.",
-        "Light, thin frames or rimless eyeglasses complement your face beautifully.",
-        "Hats should be proportional to your jawline; avoid styles that are too wide."
-      ];
+      return {
+        hairstyles: [
+          "Medium-length hairstyles that add width at the jaw level balance your proportions.",
+          "Side-swept bangs help balance a wider forehead.",
+          "Hairstyles with volume at the chin area complement your face shape."
+        ],
+        glasses: [
+          "Light, thin frames or rimless eyeglasses complement your face beautifully.",
+          "Bottom-heavy frames add balance to a narrower chin.",
+          "Oval or round frames soften the wider upper face."
+        ],
+        makeup: [
+          "Contour at the temples and sides of forehead to minimize width.",
+          "Apply blush in a horizontal sweep to create the illusion of width at cheeks.",
+          "Use bronzer along the jawline to create definition."
+        ]
+      };
     case FACE_SHAPES.OBLONG:
-      return [
-        "Side-swept bangs and layers add width and break the length of your face.",
-        "Oversized or decorative eyeglasses work well to break the vertical line.",
-        "Wide-brimmed hats help create the illusion of width."
-      ];
+      return {
+        hairstyles: [
+          "Side-swept bangs and layers add width and break the length of your face.",
+          "Short to medium-length hairstyles work best.",
+          "Styles with volume at the sides help create the illusion of width."
+        ],
+        glasses: [
+          "Oversized or decorative eyeglasses work well to break the vertical line.",
+          "Frames with strong horizontal elements are ideal.",
+          "Deep or wide frames help balance face length."
+        ],
+        makeup: [
+          "Apply blush horizontally across cheeks to add width.",
+          "Use highlighter across the chin and forehead to shorten the face.",
+          "Contour the chin and top of the forehead to visually shorten face length."
+        ]
+      };
     case FACE_SHAPES.DIAMOND:
-      return [
-        "Hairstyles with volume at the forehead and chin complement your cheekbones.",
-        "Eyeglasses with detailing on the top rim or cat-eye shapes work well.",
-        "Asymmetrical hats or designs complement your distinct face shape."
-      ];
+      return {
+        hairstyles: [
+          "Hairstyles with volume at the forehead and chin complement your cheekbones.",
+          "Side-swept or curtain bangs help soften angular features.",
+          "Chin-length bobs accentuate your jawline while balancing cheekbones."
+        ],
+        glasses: [
+          "Eyeglasses with detailing on the top rim or cat-eye shapes work well.",
+          "Oval or rimless frames complement your distinct face shape.",
+          "Frames that are wider than your cheekbones create balance."
+        ],
+        makeup: [
+          "Apply highlighter to the center of your forehead and chin to add balance.",
+          "Contour below the cheekbones to soften their prominence.",
+          "Use blush on the apples of your cheeks to enhance your natural structure."
+        ]
+      };
     default:
-      return [
-        "Focus on hairstyles that complement your unique facial features.",
-        "Choose eyewear that balances your face proportions.",
-        "Select hats and accessories that highlight your best features."
-      ];
+      return {
+        hairstyles: [
+          "Focus on hairstyles that complement your unique facial features.",
+          "Consider face-framing layers to enhance your features.",
+          "Consult with a professional stylist for personalized recommendations."
+        ],
+        glasses: [
+          "Choose eyewear that balances your face proportions.",
+          "Look for frames that complement your facial symmetry.",
+          "Try multiple styles to find what suits your face best."
+        ],
+        makeup: [
+          "Use techniques that enhance your natural features.",
+          "Experiment with different contouring techniques to find what works best.",
+          "Highlight your favorite facial features to draw attention to them."
+        ]
+      };
   }
 }

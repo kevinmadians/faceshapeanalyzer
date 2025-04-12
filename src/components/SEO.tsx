@@ -16,7 +16,7 @@ const SEO: React.FC<SEOProps> = ({
   description,
   canonicalUrl = "https://faceshapeanalyzer.net/",
   keywords = "face shape analyzer, face shape test, face analysis, AI face tool",
-  imageUrl = "/og-image.jpg",
+  imageUrl = "/opengraph-image.png",
   type = "website",
   noIndex = false
 }) => {

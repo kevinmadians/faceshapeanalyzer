@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Open Graph Image</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        canvas {
+            border: 1px solid #ccc;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #4F46E5;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        button:hover {
+            background-color: #4338CA;
+        }
+        p {
+            margin-bottom: 10px;
+            max-width: 800px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Create Open Graph Image for Face Shape Analyzer</h1>
+    <p>This tool will create a proper Open Graph image (1200x630 pixels) for social media sharing.</p>
+    
+    <canvas id="ogCanvas" width="1200" height="630"></canvas>
+    
+    <button id="downloadBtn">Download og-image.jpg</button>
+    
+    <p>After downloading, place the file in the public directory of your project.</p>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const canvas = document.getElementById('ogCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Fill background with a gradient
+            const gradient = ctx.createLinearGradient(0, 0, 0, 630);
+            gradient.addColorStop(0, '#7C3AED');  // Purple (primary color)
+            gradient.addColorStop(1, '#4F46E5');  // Indigo
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 1200, 630);
+            
+            // Add a subtle pattern to the background
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.03)';
+            for (let i = 0; i < 30; i++) {
+                for (let j = 0; j < 15; j++) {
+                    ctx.fillRect(i * 40, j * 40, 10, 10);
+                }
+            }
+            
+            // Draw the face shape silhouette in the left side
+            ctx.fillStyle = '#FDBA74'; // Light orange for face
+            ctx.beginPath();
+            
+            // Draw a face silhouette (oval face shape)
+            ctx.moveTo(300, 215);
+            ctx.bezierCurveTo(300, 130, 200, 80, 120, 130);
+            ctx.bezierCurveTo(40, 180, 40, 400, 120, 450);
+            ctx.bezierCurveTo(200, 500, 300, 450, 300, 365);
+            ctx.fill();
+            
+            // Add slight shadow to face
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+            ctx.shadowBlur = 15;
+            ctx.shadowOffsetX = 10;
+            ctx.shadowOffsetY = 10;
+            
+            // Draw text on the right side
+            ctx.shadowColor = 'transparent';
+            ctx.shadowBlur = 0;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
+            
+            // Title - "Face Shape Analyzer"
+            ctx.font = 'bold 64px Arial, sans-serif';
+            ctx.fillStyle = 'white';
+            ctx.textAlign = 'left';
+            ctx.fillText('Face Shape Analyzer', 400, 250);
+            
+            // Subtitle - "AI-Powered Face Shape Analysis Tool"
+            ctx.font = '36px Arial, sans-serif';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.fillText('AI-Powered Face Shape Analysis Tool', 400, 310);
+            
+            // Add a feature line
+            ctx.font = '28px Arial, sans-serif';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+            ctx.fillText('Discover your perfect face shape in seconds', 400, 370);
+            
+            // Add decoration elements
+            ctx.fillStyle = '#FCD34D'; // Yellow/gold color
+            
+            // Small stars/sparkles
+            const drawStar = (x, y, size) => {
+                ctx.beginPath();
+                for (let i = 0; i < 5; i++) {
+                    ctx.lineTo(
+                        x + size * Math.cos((i * 2 * Math.PI / 5) - Math.PI/2),
+                        y + size * Math.sin((i * 2 * Math.PI / 5) - Math.PI/2)
+                    );
+                    ctx.lineTo(
+                        x + (size/2) * Math.cos(((i + 0.5) * 2 * Math.PI / 5) - Math.PI/2),
+                        y + (size/2) * Math.sin(((i + 0.5) * 2 * Math.PI / 5) - Math.PI/2)
+                    );
+                }
+                ctx.closePath();
+                ctx.fill();
+            };
+            
+            // Add a few decorative stars
+            drawStar(1000, 450, 15);
+            drawStar(1050, 420, 20);
+            drawStar(1100, 460, 12);
+            
+            // Add URL at bottom
+            ctx.font = '24px Arial, sans-serif';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+            ctx.textAlign = 'center';
+            ctx.fillText('faceshapeanalyzer.net', 600, 580);
+            
+            // Handle download button
+            document.getElementById('downloadBtn').addEventListener('click', function() {
+                const link = document.createElement('a');
+                link.download = 'og-image.jpg';
+                link.href = canvas.toDataURL('image/jpeg', 0.9);
+                link.click();
+            });
+        });
+    </script>
+</body>
+</html> 

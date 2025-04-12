@@ -1,4 +1,3 @@
-
 import * as tf from '@tensorflow/tfjs';
 // Use 'any' to avoid type issues with the face-landmarks-detection library
 import * as faceLandmarksDetection from '@tensorflow-models/face-landmarks-detection';
@@ -7,24 +6,23 @@ import * as faceLandmarksDetection from '@tensorflow-models/face-landmarks-detec
 // In a real application, you would load a pre-trained model
 let faceDetectionModel: any = null;
 let modelLoadAttempted = false;
+let modelLoadPromise: Promise<any> | null = null;
 
 // Initialize TensorFlow.js
 export async function initializeTensorFlow(
   progressCallback: (progress: number) => void
 ): Promise<void> {
   try {
-    // Set a timeout to avoid hanging forever
-    const tfReadyPromise = tf.ready();
-    const timeoutPromise = new Promise((_, reject) => {
-      setTimeout(() => reject(new Error("TensorFlow.js initialization timed out")), 10000);
-    });
-    
-    await Promise.race([tfReadyPromise, timeoutPromise]);
-    console.log("TensorFlow.js is ready");
+    // Prefer WebGL backend for better performance
+    await tf.setBackend('webgl');
+    await tf.ready();
+    console.log("TensorFlow.js is ready with backend:", tf.getBackend());
     progressCallback(20);
   } catch (error) {
     console.error("Failed to initialize TensorFlow.js:", error);
-    throw new Error("Failed to initialize TensorFlow.js. Your browser might not support this feature.");
+    // Reset state on error to allow retry
+    modelLoadAttempted = false;
+    throw new Error("Failed to initialize TensorFlow.js. Please refresh the page to try again.");
   }
 }
 
@@ -33,63 +31,73 @@ export async function loadModel(
   progressCallback: (progress: number) => void
 ): Promise<void> {
   try {
-    if (!faceDetectionModel && !modelLoadAttempted) {
-      modelLoadAttempted = true;
-      progressCallback(30);
-      
-      // Set a timeout to avoid hanging forever
-      const modelLoadPromise = loadModelImplementation();
-      const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error("Model loading timed out")), 15000);
-      });
-      
-      faceDetectionModel = await Promise.race([modelLoadPromise, timeoutPromise]);
-      
-      progressCallback(70);
+    // Return existing model if already loaded
+    if (faceDetectionModel) {
+      progressCallback(100);
+      console.log("Face detection model already loaded");
+      return;
     }
-    
-    progressCallback(100);
-    console.log("Face detection model loaded or already available");
-  } catch (error) {
-    modelLoadAttempted = false; // Reset so we can try again
-    console.error("Failed to load face detection model:", error);
-    throw new Error("Failed to load face detection model. Your browser might not fully support this feature.");
-  }
-}
 
-async function loadModelImplementation() {
-  try {
-    // Use the newer API if available, otherwise fall back to older API
-    if (faceLandmarksDetection.createDetector) {
-      console.log("Using createDetector API");
-      return await faceLandmarksDetection.createDetector(
-        faceLandmarksDetection.SupportedModels.MediaPipeFaceMesh,
-        {
-          runtime: 'tfjs',
-          refineLandmarks: true,
-          maxFaces: 1
-        }
-      );
-    } else {
-      console.log("Using legacy API");
-      // This is for compatibility with older versions of the library
-      // @ts-ignore - Intentionally using any to work with different versions
-      return await faceLandmarksDetection.load(
-        // @ts-ignore
-        faceLandmarksDetection.SupportedPackages.mediapipeFacemesh,
-        {
-          maxFaces: 1,
-          refineLandmarks: true,
-        }
-      );
+    // Start new model loading process
+    modelLoadAttempted = true;
+    progressCallback(30);
+    
+    try {
+      // Simple loading approach - try the legacy API first as it's more reliable in browsers
+      try {
+        console.log("Trying legacy API...");
+        // @ts-ignore - Intentionally using any to work with different versions
+        faceDetectionModel = await faceLandmarksDetection.load(
+          // @ts-ignore
+          faceLandmarksDetection.SupportedPackages.mediapipeFacemesh,
+          {
+            maxFaces: 1,
+            refineLandmarks: true,
+          }
+        );
+        console.log("Loaded model using legacy API");
+      } catch (legacyError) {
+        console.log("Legacy API failed, trying newer API:", legacyError);
+        // Try the newer API as fallback
+        faceDetectionModel = await faceLandmarksDetection.createDetector(
+          faceLandmarksDetection.SupportedModels.MediaPipeFaceMesh,
+          {
+            runtime: 'tfjs',
+            refineLandmarks: true,
+            maxFaces: 1
+          }
+        );
+        console.log("Loaded model using newer API");
+      }
+      
+      progressCallback(100);
+      console.log("Face detection model loaded successfully");
+    } catch (error) {
+      console.error("Both APIs failed to load the model:", error);
+      throw error;
     }
   } catch (error) {
-    console.error("Error in model implementation loading:", error);
-    throw error;
+    // Reset state on error to allow retry
+    modelLoadAttempted = false;
+    modelLoadPromise = null;
+    faceDetectionModel = null;
+    console.error("Failed to load face detection model:", error);
+    throw new Error("Failed to load face detection model. Please refresh the page to try again.");
   }
 }
 
 // Export the model for use in other files
 export function getModel() {
+  if (!faceDetectionModel) {
+    throw new Error("Face detection model not loaded. Please refresh and try again.");
+  }
   return faceDetectionModel;
+}
+
+// Reset the model state - useful for debugging or force reloading
+export function resetModel() {
+  faceDetectionModel = null;
+  modelLoadAttempted = false;
+  modelLoadPromise = null;
+  console.log("Model state has been reset");
 }

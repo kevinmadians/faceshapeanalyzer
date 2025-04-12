@@ -1,8 +1,10 @@
-
-import { getModel, loadModel } from './modelLoader';
+import { getModel, loadModel, resetModel } from './modelLoader';
 import { analyzeFaceShape, determinePrimaryShape } from './analyzer';
 import { generateStyleTips } from './styleTips';
 import { FaceShapeResult } from './types';
+
+// Simple delay helper function
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 // Detect face landmarks from an image
 export async function detectFaceLandmarks(
@@ -10,16 +12,24 @@ export async function detectFaceLandmarks(
   progressCallback: (progress: number) => void
 ): Promise<FaceShapeResult | null> {
   try {
-    const model = getModel();
-    if (!model) {
+    // Try to get the model - if it fails, try to load it again
+    let faceDetectionModel;
+    try {
+      faceDetectionModel = getModel();
+    } catch (error) {
       console.log("Model not loaded, attempting to load it now...");
       await loadModel(progressCallback);
+      faceDetectionModel = getModel();
     }
     
     progressCallback(20);
+    await delay(200); // Short delay after model loading
     
     // Load the image
     const img = new Image();
+    img.crossOrigin = "anonymous"; // Try to prevent CORS issues
+    
+    progressCallback(25);
     await new Promise((resolve, reject) => {
       img.onload = resolve;
       img.onerror = (e) => {
@@ -29,34 +39,54 @@ export async function detectFaceLandmarks(
       img.src = imageUrl;
     });
     
+    progressCallback(30);
+    await delay(300); // Slight delay after image loading
+    
+    // Begin face detection (gradual progress updates for visual effect)
+    progressCallback(35);
+    await delay(200);
     progressCallback(40);
     
-    const faceDetectionModel = getModel();
-    if (!faceDetectionModel) {
-      throw new Error("Face detection model is not available. Please refresh and try again.");
-    }
-    
-    // Use the face detection model
+    // Use the face detection model with simplified error handling
     let predictions;
     try {
+      // Try both API styles
       if (typeof faceDetectionModel.estimateFaces === 'function') {
         // Older API
-        predictions = await faceDetectionModel.estimateFaces(img);
+        predictions = await faceDetectionModel.estimateFaces(img, {
+          returnTensors: false,
+          flipHorizontal: false,
+          predictIrises: true
+        });
       } else {
         // Newer API
         predictions = await faceDetectionModel.detect(img);
       }
     } catch (error) {
       console.error("Error during face detection:", error);
-      throw new Error("Failed to detect faces in the image. Please try a clearer photo.");
+      
+      // Reset the model and try one more time
+      resetModel();
+      await loadModel(progressCallback);
+      faceDetectionModel = getModel();
+      
+      // Try once more with the reloaded model
+      if (typeof faceDetectionModel.estimateFaces === 'function') {
+        predictions = await faceDetectionModel.estimateFaces(img);
+      } else {
+        predictions = await faceDetectionModel.detect(img);
+      }
     }
     
     progressCallback(60);
+    await delay(300); // Delay after face detection
     
     if (!predictions || predictions.length === 0) {
-      console.log("No faces detected");
+      console.log("No faces detected in the image");
       return null;
     }
+    
+    progressCallback(65);
     
     const face = predictions[0];
     let rawLandmarks: number[][] = [];
@@ -74,7 +104,7 @@ export async function detectFaceLandmarks(
     }
     
     if (!rawLandmarks || rawLandmarks.length === 0) {
-      console.log("No valid landmarks found");
+      console.log("No valid landmarks found in the face");
       throw new Error("Failed to extract facial landmarks. Please try a clearer photo with a front-facing view.");
     }
     
@@ -84,12 +114,28 @@ export async function detectFaceLandmarks(
       y: point[1]
     }));
     
+    progressCallback(70);
+    await delay(400); // Slightly longer delay to simulate measurement calculations
+    
+    // Show incremental progress during analysis
+    progressCallback(75);
+    await delay(250);
     progressCallback(80);
     
     // Analyze face shape
     const faceShapeScores = analyzeFaceShape(landmarks);
+    progressCallback(85);
+    await delay(300);
+    
     const primaryShape = determinePrimaryShape(faceShapeScores);
+    progressCallback(90);
+    await delay(200);
+    
+    // Generate styling recommendations
     const tips = generateStyleTips(primaryShape);
+    
+    progressCallback(95);
+    await delay(400); // Final delay for recommendation generation
     
     progressCallback(100);
     
@@ -102,7 +148,11 @@ export async function detectFaceLandmarks(
     };
     
   } catch (error) {
-    console.error("Error detecting face landmarks:", error);
-    throw new Error(error instanceof Error ? error.message : "Failed to analyze face shape. Please try again with a clearer image.");
+    console.error("Error in face shape detection:", error);
+    throw new Error(
+      error instanceof Error 
+        ? error.message 
+        : "Failed to analyze face shape. Please try again with a clearer image."
+    );
   }
 }

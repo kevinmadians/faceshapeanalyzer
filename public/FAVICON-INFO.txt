@@ -1,0 +1,28 @@
+# Favicon Files Required
+
+For proper favicon support across all devices, you'll need to create and add the following files to this directory:
+
+1. `favicon.ico` - Classic favicon (16x16, 32x32 combined)
+2. `favicon-16x16.png` - Small favicon for browsers
+3. `favicon-32x32.png` - Standard favicon for browsers
+4. `apple-touch-icon.png` - For iOS devices (180x180)
+5. `android-chrome-192x192.png` - For Android devices
+6. `android-chrome-512x512.png` - For Android devices (larger)
+
+## How to Create Favicon Files
+
+You can generate all these files from a single logo/image using online tools such as:
+
+- [RealFaviconGenerator](https://realfavicongenerator.net/)
+- [Favicon.io](https://favicon.io/)
+
+These tools will create all the necessary formats and sizes from your original image.
+
+## Implementation
+
+All these files are already referenced in:
+- `public/index.html`
+- `public/site.webmanifest`
+- `public/manifest.json`
+
+Simply add the favicon files to this directory, and they will be automatically used. 

@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Upload, Image as ImageIcon, X } from "lucide-react";
@@ -7,11 +6,13 @@ import { cn } from "@/lib/utils";
 
 interface ImageUploaderProps {
   onImageSelected: (file: File, imageUrl: string) => void;
+  onImageCleared?: () => void;
   className?: string;
 }
 
 const ImageUploader: React.FC<ImageUploaderProps> = ({
   onImageSelected,
+  onImageCleared,
   className,
 }) => {
   const [dragActive, setDragActive] = useState(false);
@@ -82,6 +83,9 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
     if (inputRef.current) {
       inputRef.current.value = "";
     }
+    if (onImageCleared) {
+      onImageCleared();
+    }
   };
 
   return (
@@ -89,7 +93,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
       {!previewImage ? (
         <div
           className={cn(
-            "border-2 border-dashed rounded-xl p-10 text-center transition-all",
+            "border-2 border-dashed rounded-xl p-3 sm:p-6 text-center transition-all",
             dragActive ? "border-primary bg-accent/50" : "border-border",
           )}
           onDragEnter={handleDrag}
@@ -106,39 +110,46 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
             id="image-upload"
           />
           
-          <div className="flex flex-col items-center justify-center space-y-4">
-            <div className="w-16 h-16 rounded-full bg-lavender flex items-center justify-center">
-              <Upload className="h-8 w-8 text-primary" />
+          <div className="flex flex-col items-center justify-center space-y-1 sm:space-y-3">
+            <div className="w-10 h-12 sm:w-16 sm:h-16 rounded-full bg-lavender flex items-center justify-center">
+              <Upload className="h-5 w-5 sm:h-8 sm:w-8 text-primary" />
             </div>
-            <div className="space-y-2">
-              <h3 className="font-medium text-lg">Upload your photo</h3>
-              <p className="text-muted-foreground text-sm max-w-xs mx-auto">
+            <div className="space-y-0.5 sm:space-y-2">
+              <h3 className="font-medium text-sm sm:text-lg">Upload your photo</h3>
+              <p className="text-muted-foreground text-xs sm:text-sm max-w-xs mx-auto">
                 Drag and drop your image here or click to browse
               </p>
             </div>
             <Button 
               onClick={() => inputRef.current?.click()}
-              className="mt-4"
+              className="mt-1 sm:mt-3"
+              size="sm"
             >
               Choose Image
             </Button>
           </div>
         </div>
       ) : (
-        <div className="relative rounded-xl overflow-hidden shadow-md">
-          <img
-            src={previewImage}
-            alt="Preview"
-            className="w-full h-auto object-cover"
-          />
-          <Button
-            onClick={clearImage}
-            size="icon"
-            variant="secondary"
-            className="absolute top-2 right-2 p-1.5 rounded-full"
-          >
-            <X className="h-5 w-5" />
-          </Button>
+        <div className="flex justify-center">
+          <div className="relative w-full max-w-md rounded-xl overflow-hidden shadow-md bg-background">
+            <div className="flex items-center justify-center">
+              <img
+                src={previewImage}
+                alt="Preview"
+                className="w-auto max-w-full h-auto object-contain max-h-[500px]"
+                style={{ display: 'block' }}
+              />
+            </div>
+            <div className="absolute top-0 left-0 right-0 bg-gradient-to-b from-black/40 to-transparent h-12 pointer-events-none"></div>
+            <Button
+              onClick={clearImage}
+              size="icon"
+              variant="secondary"
+              className="absolute top-2 right-2 p-1.5 rounded-full shadow-sm z-10"
+            >
+              <X className="h-5 w-5" />
+            </Button>
+          </div>
         </div>
       )}
     </div>

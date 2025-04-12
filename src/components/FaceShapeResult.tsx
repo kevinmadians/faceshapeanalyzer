@@ -1,9 +1,9 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { Check, Share2, Download, Camera, ChevronDown, ChevronUp } from 'lucide-react';
+import { Check, Share2, Download, Camera, ChevronDown, ChevronUp, Scissors, Glasses, Palette } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { cn } from '@/lib/utils';
 
 export interface FaceShapeData {
   primary: string;
@@ -44,180 +44,127 @@ const FaceShapeResult: React.FC<FaceShapeResultProps> = ({
     'Diamond': ['Jennifer Lopez', 'Robert Pattinson', 'Ashley Greene']
   };
 
+  const renderTipCard = (
+    title: string, 
+    tips: string[], 
+    icon: React.ReactNode, 
+    showAll: boolean, 
+    setShowAll: (value: boolean) => void,
+    gradientClass: string
+  ) => (
+    <Card className="group hover:shadow-lg transition-shadow duration-300">
+      <CardHeader className={cn("pb-2", gradientClass)}>
+        <CardTitle className="text-2xl flex items-center gap-2 text-white">
+          <span className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+            {icon}
+          </span>
+          {title}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="pt-6">
+        <ul className="space-y-4">
+          {tips.slice(0, showAll ? undefined : 2).map((tip, i) => (
+            <li key={i} className="flex items-start gap-3 group/tip hover:bg-accent p-3 rounded-lg transition-colors">
+              <span className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <Check className="h-3.5 w-3.5 text-primary group-hover/tip:scale-110 transition-transform" />
+              </span>
+              <span className="text-foreground group-hover/tip:text-foreground transition-colors">{tip}</span>
+            </li>
+          ))}
+        </ul>
+        {tips.length > 2 && (
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className={cn(
+              "mt-4 w-full font-medium",
+              gradientClass.includes("violet") && "text-violet-600 hover:text-violet-700 hover:bg-violet-50",
+              gradientClass.includes("blue") && "text-blue-600 hover:text-blue-700 hover:bg-blue-50",
+              gradientClass.includes("pink") && "text-pink-600 hover:text-pink-700 hover:bg-pink-50"
+            )}
+            onClick={() => setShowAll(!showAll)}
+          >
+            {showAll ? (
+              <><ChevronUp className="h-4 w-4 mr-1" /> Show Less Tips</>
+            ) : (
+              <><ChevronDown className="h-4 w-4 mr-1" /> Show More Tips</>
+            )}
+          </Button>
+        )}
+      </CardContent>
+    </Card>
+  );
+
   return (
     <div className="w-full max-w-5xl mx-auto space-y-8">
-      {/* Photo Card - Centered at Top */}
-      <div className="flex justify-center">
-        <Card className="w-full max-w-md">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-xl text-center">Your Face Shape: <span className="text-primary capitalize">{primary}</span></CardTitle>
-            <CardDescription className="text-center">
-              {primary === 'oval' && 'Balanced proportions with a slightly narrower forehead and jaw'}
-              {primary === 'round' && 'Soft angles with similar width and length measurements'}
-              {primary === 'square' && 'Strong jawline with similar width measurements throughout'}
-              {primary === 'heart' && 'Wider forehead, prominent cheekbones and a pointed chin'}
-              {primary === 'oblong' && 'Elongated face with similar width measurements throughout'}
-              {primary === 'diamond' && 'Narrow forehead and jawline with prominent cheekbones'}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex justify-center pt-2">
-            <div className="relative rounded-md overflow-hidden w-64 h-64">
-              <img 
-                src={imageUrl} 
-                alt="Your uploaded face" 
-                className="w-full h-full object-cover"
-              />
-              {landmarks && landmarks.length > 0 && (
-                <svg
-                  className="absolute top-0 left-0 w-full h-full"
-                  viewBox="0 0 1 1"
-                  preserveAspectRatio="none"
-                >
-                  {landmarks.map((point, i) => (
-                    <circle
-                      key={i}
-                      cx={point.x}
-                      cy={point.y}
-                      r="0.003"
-                      fill="#7C3AED"
-                      opacity={0.7}
-                    />
-                  ))}
-                </svg>
-              )}
-            </div>
-          </CardContent>
-          <CardFooter className="flex justify-center gap-2">
-            <Button variant="outline" size="sm" className="gap-1">
-              <Share2 className="h-4 w-4" /> Share
-            </Button>
-            <Button variant="outline" size="sm" className="gap-1">
-              <Download className="h-4 w-4" /> Save
-            </Button>
-          </CardFooter>
-        </Card>
-      </div>
-      
-      {/* Tabs for different content sections */}
       <Tabs defaultValue="recommendations" onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid grid-cols-3 mb-8">
-          <TabsTrigger value="recommendations">Styling Tips</TabsTrigger>
-          <TabsTrigger value="analysis">Shape Analysis</TabsTrigger>
-          <TabsTrigger value="celebrities">Celebrity Matches</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-3 mb-6 md:mb-8 p-1 md:p-1.5">
+          <TabsTrigger 
+            value="recommendations" 
+            className="text-xs md:text-sm lg:text-base px-2 py-1.5 data-[state=active]:bg-primary data-[state=active]:text-white"
+          >
+            <span className="flex items-center gap-1 md:gap-2">
+              <Check className="hidden md:inline-block h-3.5 w-3.5 md:h-4 md:w-4 flex-shrink-0" />
+              <span className="whitespace-nowrap">Styling Tips</span>
+            </span>
+          </TabsTrigger>
+          <TabsTrigger 
+            value="analysis" 
+            className="text-xs md:text-sm lg:text-base px-2 py-1.5 data-[state=active]:bg-primary data-[state=active]:text-white"
+          >
+            <span className="flex items-center gap-1 md:gap-2">
+              <ChevronDown className="hidden md:inline-block h-3.5 w-3.5 md:h-4 md:w-4 flex-shrink-0" />
+              <span className="whitespace-nowrap">Shape Analysis</span>
+            </span>
+          </TabsTrigger>
+          <TabsTrigger 
+            value="celebrities" 
+            className="text-xs md:text-sm lg:text-base px-2 py-1.5 data-[state=active]:bg-primary data-[state=active]:text-white"
+          >
+            <span className="flex items-center gap-1 md:gap-2">
+              <Share2 className="hidden md:inline-block h-3.5 w-3.5 md:h-4 md:w-4 flex-shrink-0" />
+              <span className="whitespace-nowrap">Celebrity Matches</span>
+            </span>
+          </TabsTrigger>
         </TabsList>
         
         {/* Recommendations Tab */}
         <TabsContent value="recommendations" className="space-y-6">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-2xl flex items-center gap-2">
-                <span className="w-8 h-8 rounded-full bg-lavender flex items-center justify-center">
-                  <Check className="h-4 w-4 text-primary" />
-                </span>
-                Recommended Hairstyles
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-2">
-                {tips.hairstyles.slice(0, showAllHairstyles ? undefined : 2).map((tip, i) => (
-                  <li key={i} className="flex items-start gap-2">
-                    <span className="text-primary mt-1">•</span>
-                    <span>{tip}</span>
-                  </li>
-                ))}
-              </ul>
-              {tips.hairstyles.length > 2 && (
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="mt-2 text-primary" 
-                  onClick={() => setShowAllHairstyles(!showAllHairstyles)}
-                >
-                  {showAllHairstyles ? (
-                    <><ChevronUp className="h-4 w-4 mr-1" /> Show Less</>
-                  ) : (
-                    <><ChevronDown className="h-4 w-4 mr-1" /> Show More</>
-                  )}
-                </Button>
-              )}
-            </CardContent>
-          </Card>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {renderTipCard(
+              "Hairstyles",
+              tips.hairstyles,
+              <Scissors className="h-5 w-5 text-white" />,
+              showAllHairstyles,
+              setShowAllHairstyles,
+              "bg-gradient-to-br from-violet-600 to-violet-700"
+            )}
+            
+            {renderTipCard(
+              "Glasses",
+              tips.glasses,
+              <Glasses className="h-5 w-5 text-white" />,
+              showAllGlasses,
+              setShowAllGlasses,
+              "bg-gradient-to-br from-blue-600 to-blue-700"
+            )}
+            
+            {renderTipCard(
+              "Makeup",
+              tips.makeup,
+              <Palette className="h-5 w-5 text-white" />,
+              showAllMakeup,
+              setShowAllMakeup,
+              "bg-gradient-to-br from-pink-600 to-pink-700"
+            )}
+          </div>
           
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-2xl flex items-center gap-2">
-                <span className="w-8 h-8 rounded-full bg-softBlue flex items-center justify-center">
-                  <Check className="h-4 w-4 text-primary" />
-                </span>
-                Glasses Frames
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-2">
-                {tips.glasses.slice(0, showAllGlasses ? undefined : 2).map((tip, i) => (
-                  <li key={i} className="flex items-start gap-2">
-                    <span className="text-primary mt-1">•</span>
-                    <span>{tip}</span>
-                  </li>
-                ))}
-              </ul>
-              {tips.glasses.length > 2 && (
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="mt-2 text-primary" 
-                  onClick={() => setShowAllGlasses(!showAllGlasses)}
-                >
-                  {showAllGlasses ? (
-                    <><ChevronUp className="h-4 w-4 mr-1" /> Show Less</>
-                  ) : (
-                    <><ChevronDown className="h-4 w-4 mr-1" /> Show More</>
-                  )}
-                </Button>
-              )}
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-2xl flex items-center gap-2">
-                <span className="w-8 h-8 rounded-full bg-softPink flex items-center justify-center">
-                  <Check className="h-4 w-4 text-primary" />
-                </span>
-                Makeup Tips
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-2">
-                {tips.makeup.slice(0, showAllMakeup ? undefined : 2).map((tip, i) => (
-                  <li key={i} className="flex items-start gap-2">
-                    <span className="text-primary mt-1">•</span>
-                    <span>{tip}</span>
-                  </li>
-                ))}
-              </ul>
-              {tips.makeup.length > 2 && (
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="mt-2 text-primary" 
-                  onClick={() => setShowAllMakeup(!showAllMakeup)}
-                >
-                  {showAllMakeup ? (
-                    <><ChevronUp className="h-4 w-4 mr-1" /> Show Less</>
-                  ) : (
-                    <><ChevronDown className="h-4 w-4 mr-1" /> Show More</>
-                  )}
-                </Button>
-              )}
-            </CardContent>
-          </Card>
-          
-          <div className="text-center p-4 bg-lavender/10 rounded-lg">
-            <p className="text-muted-foreground">Want to experiment with different looks?</p>
-            <Button className="mt-2 gap-2">
+          <div className="mt-8 text-center p-6 bg-gradient-to-r from-lavender/30 to-softBlue/30 rounded-xl backdrop-blur-sm">
+            <h3 className="text-lg font-semibold mb-2">Ready to Explore More Styles?</h3>
+            <p className="text-muted-foreground mb-4">Try analyzing another photo to refine your results</p>
+            <Button size="lg" className="gap-2 bg-primary hover:bg-primary/90">
               <Camera className="h-4 w-4" />
-              Try Another Photo
+              Analyze Another Photo
             </Button>
           </div>
         </TabsContent>

@@ -1,33 +1,35 @@
-
-import React from "react";
-import { useLocation } from "react-router-dom";
-import { useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { AlertCircle } from "lucide-react";
+import React, { useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft } from 'lucide-react';
+import SEO from '@/components/SEO';
 
 const NotFound = () => {
-  const location = useLocation();
-
   useEffect(() => {
-    console.error(
-      "404 Error: User attempted to access non-existent route:",
-      location.pathname
-    );
-  }, [location.pathname]);
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
-    <div className="min-h-screen gradient-bg flex flex-col items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-lg p-8 text-center max-w-md w-full">
-        <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
-          <AlertCircle className="h-10 w-10 text-red-500" />
-        </div>
-        <h1 className="text-4xl font-bold mb-2">404</h1>
-        <p className="text-xl text-gray-600 mb-6">Oops! Page not found</p>
-        <p className="text-muted-foreground mb-8">
+    <div className="min-h-screen bg-gradient-to-b from-background to-accent/20 flex flex-col items-center justify-center p-4">
+      <SEO 
+        title="Page Not Found - Face Shape Analyzer"
+        description="The page you're looking for doesn't exist or has been moved. Return to the Face Shape Analyzer homepage."
+        canonicalUrl="/404"
+        keywords="page not found, 404 error, face shape analyzer"
+        noIndex={true}
+      />
+      
+      <div className="text-center">
+        <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70">404</h1>
+        <h2 className="text-2xl md:text-3xl font-semibold mb-6">Page Not Found</h2>
+        <p className="text-muted-foreground mb-8 max-w-md">
           The page you're looking for doesn't exist or has been moved.
         </p>
-        <Button asChild className="w-full">
-          <a href="/">Return to Home</a>
+        <Button asChild className="gap-2">
+          <Link to="/">
+            <ArrowLeft className="h-4 w-4" />
+            Back to Home
+          </Link>
         </Button>
       </div>
     </div>

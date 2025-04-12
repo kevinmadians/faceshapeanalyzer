@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -93,20 +92,56 @@ export default {
 					}
 				},
 				'pulse-ring': {
-					'0%': { transform: 'scale(0.8)', opacity: '0' },
-					'50%': { opacity: '1' },
-					'100%': { transform: 'scale(1.5)', opacity: '0' }
+					'0%': { transform: 'scale(0.95)', opacity: '0.2' },
+					'50%': { opacity: '0.5' },
+					'100%': { transform: 'scale(1.2)', opacity: '0' }
 				},
 				'spin-slow': {
 					'0%': { transform: 'rotate(0deg)' },
 					'100%': { transform: 'rotate(360deg)' }
+				},
+				'scan-down': {
+					'0%': { transform: 'translateY(0%)', opacity: '0.7' },
+					'5%': { opacity: '0.8' },
+					'30%': { opacity: '0.9' },
+					'50%': { transform: 'translateY(50%)' },
+					'70%': { opacity: '0.9' },
+					'95%': { opacity: '0.8' },
+					'100%': { transform: 'translateY(100%)', opacity: '0.7' }
+				},
+				'scan-horizontal': {
+					'0%': { transform: 'translateX(-10%)', opacity: '0.7', width: '60%' },
+					'25%': { opacity: '0.9', width: '50%' },
+					'50%': { transform: 'translateX(60%)', opacity: '1', width: '70%' },
+					'75%': { opacity: '0.9', width: '50%' },
+					'100%': { transform: 'translateX(-10%)', opacity: '0.7', width: '60%' }
+				},
+				'grid-pulse': {
+					'0%': { opacity: '0.3', backgroundSize: '40px 40px' },
+					'50%': { opacity: '0.5', backgroundSize: '45px 45px' },
+					'100%': { opacity: '0.3', backgroundSize: '40px 40px' }
+				},
+				'glow-pulse': {
+					'0%': { boxShadow: '0 0 5px 2px rgba(124, 58, 237, 0.3)' },
+					'50%': { boxShadow: '0 0 15px 5px rgba(124, 58, 237, 0.6)' },
+					'100%': { boxShadow: '0 0 5px 2px rgba(124, 58, 237, 0.3)' }
+				},
+				'fade-pulse': {
+					'0%': { opacity: '0.5' },
+					'50%': { opacity: '0.8' },
+					'100%': { opacity: '0.5' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
-				'pulse-ring': 'pulse-ring 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite',
-				'spin-slow': 'spin-slow 3s linear infinite'
+				'pulse-ring': 'pulse-ring 2s ease-in-out infinite',
+				'spin-slow': 'spin-slow 3.5s linear infinite',
+				'scan-down': 'scan-down 3.2s cubic-bezier(0.4, 0, 0.2, 1) infinite',
+				'scan-horizontal': 'scan-horizontal 4s cubic-bezier(0.4, 0, 0.2, 1) infinite',
+				'grid-pulse': 'grid-pulse 4s ease-in-out infinite',
+				'glow-pulse': 'glow-pulse 2.5s ease-in-out infinite',
+				'fade-pulse': 'fade-pulse 1.8s ease-in-out infinite'
 			},
 			fontFamily: {
 				sans: ['Inter', 'sans-serif'],

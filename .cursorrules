@@ -1,0 +1,366 @@
+# Project Guidelines and Configuration
+
+## Development Workflow
+
+During development interactions, maintain a record of reusable project elements (e.g., library versions, model configurations) in the `Lessons` section. This includes:
+- Version specifications
+- Model configurations
+- Error resolutions
+- Best practices identified
+
+## Task Management
+
+The Scratchpad section serves as a project management tool for:
+- Task analysis and planning
+- Progress tracking
+- Milestone documentation
+- Implementation strategy
+
+Format for task tracking:
+```
+[X] Completed task
+[ ] Pending task
+```
+
+# Development Tools
+
+## Environment Configuration
+
+All development tools are Python-based. For batch processing requirements, refer to the Python utility scripts in the `tools/` directory.
+
+## Visual Verification System
+
+The screenshot verification system enables web page capture and LLM-based visual analysis:
+
+1. Screenshot Capture:
+```bash
+venv/bin/python3 tools/screenshot_utils.py URL [--output OUTPUT] [--width WIDTH] [--height HEIGHT]
+```
+
+2. LLM Visual Analysis:
+```bash
+venv/bin/python3 tools/llm_api.py --prompt "Analysis query" --provider {openai|anthropic} --image path/to/screenshot.png
+```
+
+Implementation example:
+```python
+from screenshot_utils import take_screenshot_sync
+from llm_api import query_llm
+
+screenshot_path = take_screenshot_sync('https://example.com', 'screenshot.png')
+response = query_llm(
+    "Analyze the visual elements of this webpage",
+    provider="openai",
+    image_path=screenshot_path
+)
+print(response)
+```
+
+## Language Model Integration
+
+Access to multiple LLM providers for development assistance:
+
+```bash
+venv/bin/python3 ./tools/llm_api.py --prompt "Query" --provider "anthropic"
+```
+
+Supported Providers:
+- OpenAI (default: gpt-4o)
+- Azure OpenAI (configurable via AZURE_OPENAI_MODEL_DEPLOYMENT)
+- DeepSeek (model: deepseek-chat)
+- Anthropic (model: claude-3-sonnet-20240229)
+- Gemini (model: gemini-pro)
+- Local LLM (model: Qwen/Qwen2.5-32B-Instruct-AWQ)
+
+## Web Data Collection
+
+### Web Scraping
+```bash
+venv/bin/python3 ./tools/web_scraper.py --max-concurrent 3 URL1 URL2 URL3
+```
+
+### Search Integration
+```bash
+venv/bin/python3 ./tools/search_engine.py "search query"
+```
+
+Output format:
+```
+URL: https://example.com
+Title: Result Title
+Snippet: Result Description
+```
+
+# Development Guidelines
+
+## Environment Management
+
+- Utilize the Python virtual environment in `./venv`
+- Package management:
+  1. Check for `uv` availability: `which uv`
+  2. If available: Activate venv and use `uv pip install`
+  3. Otherwise: Use standard `pip`
+
+## Version Control
+
+For multi-line commit messages:
+1. Write message to temporary file
+2. Execute: `git commit -F <filename>`
+3. Remove temporary file
+4. Include "[Cursor] " prefix in commit messages and PR titles
+
+# Knowledge Base
+
+## Environment-Specific Guidelines
+
+- Character encoding: UTF-8 for international text processing
+- Visualization: Use 'seaborn-v0_8' style for matplotlib compatibility
+- Model specifications: 'gpt-4o' for OpenAI vision capabilities
+- Temporal queries: Use current year (2025) or "recent" keyword
+
+# Project Status
+
+## User Specified Lessons
+
+- You have a python venv in ./venv. Always use (activate) it when doing python development. First, to check whether 'uv' is available, use `which uv`. If that's the case, first activate the venv, and then use `uv pip install` to install packages. Otherwise, fall back to `pip`.
+- Due to Cursor's limit, when you use `git` and `gh` and need to submit a multiline commit message, first write the message in a file, and then use `git commit -F <filename>` or similar command to commit. And then remove the file. Include "[Cursor] " in the commit message and PR title.
+- Don't make users wait for ML models to load before they can interact with the application. Instead, start loading models in the background and allow users to interact with the UI immediately. Only check for model availability when the user actually needs to use it (like when they click "Analyze").
+- Maintain consistent UI elements across pages (like headers, footers, and navigation) to provide a cohesive user experience. Core elements like the navbar and footer should have the same structure and style throughout the application to ensure users always know they're on the same website.
+- Implement robust error handling for ML model loading, including retry mechanisms. Use longer timeouts for model loading (30 seconds rather than 10-15), add proper state management to track loading attempts, and provide clear error messages and retry options when model loading fails.
+- Component extraction is a powerful refactoring technique that dramatically reduces code duplication and improves maintainability.
+- For browser-based ML applications, always provide detailed, user-friendly error messages with clear next steps when something goes wrong.
+- Use React hooks strategically to create more dynamic and responsive components (like useLocation for conditional rendering).
+
+## Cursor learned
+
+- For search results, ensure proper handling of different character encodings (UTF-8) for international queries
+- When using seaborn styles in matplotlib, use 'seaborn-v0_8' instead of 'seaborn' as the style name due to recent seaborn version changes
+- Use 'gpt-4o' as the model name for OpenAI's GPT-4 with vision capabilities
+- When searching for recent news, use the current year (2025) instead of previous years, or simply use the "recent" keyword to get the latest information
+- When extracting reusable components, always consider adding configurable props for flexibility (e.g., simplified mode, visibility toggles)
+- For ML models in browser applications:
+  - Use longer timeouts (30+ seconds) for model loading operations
+  - Implement proper loading state tracking to prevent duplicate load attempts
+  - Add retry mechanisms with clear user feedback
+  - Provide multiple fallback options for different API versions
+  - Include crossOrigin handling for image loading to prevent CORS issues
+- Regular codebase cleanup significantly improves maintainability and reduces technical debt
+- After component refactoring, always check for and clean up unused imports and state variables
+
+# Scratchpad
+
+## Current Task: Face Shape Analysis Implementation
+[ ] Research facial landmark detection algorithms
+[ ] Implement facial measurements calculation 
+[ ] Create face shape classification logic
+[ ] Design visual overlay for measurement points
+[ ] Implement responsive result display
+[ ] Add face shape description content
+[ ] Create recommendation engine for hairstyles
+[ ] Test with diverse face shapes and ethnicities
+[ ] Add loading animations during analysis
+[ ] Implement error handling for unclear images
+
+## Completed Task: SEO Implementation
+[X] Add comprehensive SEO meta tags in the document head
+[X] Create reusable SEO component with React Helmet for page-specific SEO
+[X] Add SEO titles and descriptions for all pages
+[X] Implement Open Graph and Twitter card tags for social sharing
+[X] Create sitemap.xml with all website pages
+[X] Create robots.txt file for search engine crawlers
+[X] Optimize .htaccess file for SEO-friendly URLs
+[X] Add canonical URLs to prevent duplicate content issues
+[X] Implement proper favicon handling for all devices
+[X] Add structured metadata with proper keywords for each page
+[X] Configure security headers for better SEO ranking
+[X] Enable browser caching for improved performance score
+[X] Setup proper 404 error handling for SEO
+[X] Set noIndex for Result page and 404 pages to prevent indexing
+[X] Standardize page title format to "PAGE NAME - SITE NAME"
+[X] Create optimized homepage title with tagline: "SITE NAME - TAGLINE"
+[X] Update homepage tagline to "AI-Powered Face Shape Analysis"
+[X] Implement comprehensive SEO description with target keywords and value proposition
+
+## Completed Task: Deployment Preparation
+[X] Create professional README.md with project overview
+[X] Document key features and technology stack
+[X] Add setup and installation instructions
+[X] Include deployment guides for Vercel
+[X] Add contributing guidelines
+[X] Document privacy features
+[X] Add license information
+[X] Include acknowledgements section for used libraries
+[X] Format README with emojis and proper markdown styling
+[X] Prepare for GitHub repository hosting
+
+## Completed Task: Page Navigation and Footer Standardization
+[X] Standardize footer implementation across all pages
+[X] Remove simplified prop from About page footer
+[X] Add scroll to top functionality on all pages when they load
+[X] Ensure consistent user experience across all pages
+[X] Use window.scrollTo(0, 0) in useEffect for proper scrolling behavior
+[X] Implement the same footer styling across all pages
+[X] Fix NotFound page to match the styling of other pages
+[X] Ensure all page transitions start from the top of the page
+
+## Completed Task: Legal and Contact Pages Creation
+[X] Create Privacy Policy page with privacy details and explanations
+[X] Create Terms of Service page with legal terms and conditions
+[X] Create Cookie Policy page with cookie usage details and management options
+[X] Create Contact page with contact form and company information
+[X] Implement form validation on the Contact page 
+[X] Add success feedback for form submission
+[X] Update Footer navigation links to point to new pages
+[X] Update App component with routes for new pages
+[X] Maintain consistent styling across all new pages
+[X] Ensure responsive design for all new pages
+[X] Add cross-linking between legal pages for better navigation
+[X] Create "Last updated" timestamps for all policy pages
+[X] Optimize Contact page by removing extra cards and centering the email section
+
+## Completed Task: Card Header Mobile Optimization
+[X] Reduce header text size on mobile for better display
+[X] Make card icons smaller on mobile for better proportions
+[X] Add responsive sizing with proper text-sm to text-base scaling
+[X] Decrease gap spacing between icon and text on mobile
+[X] Apply consistent styling across all card headers
+[X] Ensure proper padding and alignment for mobile displays
+[X] Optimize circular icon containers for mobile view
+[X] Make consistent responsive adjustments across all result cards
+
+## Completed Task: Results Page Button Enhancement
+[X] Make action buttons bigger and more prominent on mobile
+[X] Remove the Share Results button in favor of a more useful CTA 
+[X] Add a "View Face Shape Analysis" button that auto-scrolls to analysis section
+[X] Improve mobile layout with full-width buttons
+[X] Add proper padding and spacing for mobile UI
+[X] Use larger icons for better touch targets
+[X] Center the buttons with proper container width constraints
+[X] Add visible CSS class hooks for scroll functionality
+[X] Increase button size with padding for better mobile UX
+
+## Completed Task: Loading Screen Enhancement
+[X] Enlarge the preview photo for better visibility
+[X] Implement an engaging horizontal scan animation
+[X] Add a pulsing grid background for visual interest
+[X] Create a dynamic dual-direction scanning effect
+[X] Add percentage indicator overlay on the preview image
+[X] Improve face shape detection indicators
+[X] Add a face outline animation during processing
+[X] Create more detailed progress status messages
+[X] Enhance progress bar with better visual styling
+[X] Optimize animations for performance with GPU acceleration
+[X] Make loading screen fully responsive on all devices
+[X] Increase container max-width for larger preview display
+
+## Completed Task: Mobile Tab Visibility Enhancement
+[X] Improve tabs visibility on mobile devices
+[X] Reduce tab text size on smaller screens
+[X] Add responsive spacing for mobile layouts
+[X] Enhance active tab indication with primary color background
+[X] Ensure proper touch target size for better interaction
+[X] Add whitespace-nowrap to prevent text wrapping
+[X] Reduce icon sizes on mobile for better fit
+[X] Improve responsive text scaling from xs to base size
+[X] Apply proper padding adjustments for mobile screens
+[X] Add touch-manipulation property for better mobile interaction
+[X] Hide tab icons on mobile view for better text visibility
+[X] Add md:inline-block to show icons only on medium and larger screens
+
+## Completed Task: Result Page UI Enhancement
+[X] Update Result page to match homepage styling
+[X] Reorganize content for better engagement and flow
+[X] Add feature cards for better showcase of style recommendations
+[X] Improve mobile responsiveness with appropriate spacing and layouts
+[X] Highlight celebrity matches with better formatting
+[X] Add privacy notice to reassure users
+[X] Create visual hierarchy with clear section headers
+[X] Improve typography for better readability
+[X] Add smooth scroll navigation between sections
+[X] Enhance visual appeal with consistent styling elements
+
+## Completed Task: Result Page Standardization
+[X] Update Result page to use the common Navbar component
+[X] Update Result page to use the common Footer component
+[X] Remove duplicate navigation code from Result page
+[X] Remove duplicate footer code from Result page
+[X] Fix component props to properly work with FaceShapeResult component
+[X] Simplify the page structure for better maintenance
+
+## Completed Task: Codebase Cleanup and Optimization
+[X] Identify duplicate or unused files
+[X] Check for duplicate code across components
+[X] Remove unnecessary files safely
+[X] Identify duplicate navigation code
+[X] Create a reusable Navbar component
+[X] Update import references as needed
+[X] Create a reusable Footer component 
+[X] Remove unused mobileMenuOpen state in FaceShapes
+[X] Clean up unused imports across all pages
+[X] Fix face detection model loading issues
+[X] Implement retry mechanism for model loading
+[X] Improve error handling throughout the application
+[X] Remove empty/unused directories and files
+[X] Improve Footer component with better navigation
+
+## Identified Issues and Resolutions:
+[X] src/pages/Upload.tsx appears to be a fragment, not a complete component - REMOVED
+[X] Checked for duplicate .cursorrules files - Only one exists in root directory
+[X] Found duplicate navigation code across pages - EXTRACTED to a reusable component
+[X] Found duplicate footer code across pages - EXTRACTED to a reusable component
+[X] Unused mobileMenuOpen state in FaceShapes - REMOVED
+[X] Cleaned up unused imports in pages after refactoring
+[X] Face detection model sometimes fails to load - FIXED with better error handling and retry mechanism
+[X] Error messages weren't specific enough - IMPROVED with more detailed messages and solutions
+[X] Found empty integrations directory - REMOVED
+[X] Found unnecessary directory nesting in assets - FLATTENED structure
+[X] Found unused App.css file - REMOVED
+
+## Findings:
+- Upload.tsx was an incomplete file fragment that wasn't imported anywhere - REMOVED
+- No duplicate .cursorrules file was found in src/ directory
+- Found duplicate navigation code across pages (About, Index, FaceShapes)
+  - Extracted to a reusable <Navbar /> component in src/components/Navbar.tsx
+  - All pages now use the same Navbar configuration for complete consistency
+  - Made mobile navigation more consistent across all pages
+- Found duplicate footer code across pages (About, Index, FaceShapes)
+  - Extracted to a reusable <Footer /> component in src/components/Footer.tsx
+  - All pages updated to use the new component
+  - Added support for simplified mode with shorter footer
+  - Made footer consistent across all pages with proper linking
+- Removed the unused mobileMenuOpen state in FaceShapes.tsx after Navbar refactoring
+- Updated imports in all files to remove unused imports after refactoring
+- Fixed model loading issues by:
+  - Increasing timeouts for model loading operations
+  - Adding better state tracking to prevent duplicate loading attempts
+  - Implementing a model reset function for complete resets
+  - Adding a retry button for users to retry failed model loads
+  - Improving error messages to give users clearer instructions
+  - Adding crossOrigin handling for image loading to prevent CORS issues
+- Cleaned up directory structure:
+  - Removed empty integrations/supabase directory
+  - Removed empty integrations directory
+  - Simplified assets structure by removing unnecessary svg subfolder
+  - Removed unused App.css file that wasn't imported anywhere
+
+## Lessons Learned:
+- Component extraction is a powerful refactoring technique to reduce code duplication
+- When extracting components, consider configurable props (like showTryItButton or simplified)
+- Using hooks like useLocation helps create more dynamic and responsive components
+- After refactoring, always check for and clean up unused imports and variables
+- Component reuse improves maintainability - changes only need to be made in one place
+- When working with ML models in the browser:
+  - Always implement proper error handling with descriptive messages
+  - Use longer timeouts for model loading operations (30+ seconds)
+  - Provide retry mechanisms for when loading fails
+  - Track model loading state to prevent duplicate load attempts
+  - Add multiple fallback options for different API versions
+- Regular codebase cleanup helps maintain a more organized and efficient project
+- Always check for unused files, directories, and code to reduce technical debt
+
+## Future Improvements:
+- Consider implementing proper loading of the navbar logo from a CDN rather than a static path
+- Look into implementing lazy loading for page components to improve initial load time
+- Consider adding a theme provider for consistent styling and potential dark mode support
+- Consider adding a model pre-caching mechanism to speed up subsequent loads
+- Implement progressive enhancement to provide a fallback experience when ML features aren't available

@@ -1,5 +1,5 @@
 import { getModel, loadModel, resetModel } from './modelLoader';
-import { analyzeFaceShape, determinePrimaryShape } from './analyzer';
+import { analyzeFaceShape, determinePrimaryShape, calculateAdvancedMetrics } from './analyzer';
 import { generateStyleTips } from './styleTips';
 import { FaceShapeResult } from './types';
 
@@ -134,6 +134,9 @@ export async function detectFaceLandmarks(
     // Generate styling recommendations
     const tips = generateStyleTips(primaryShape);
     
+    // Calculate advanced metrics
+    const metrics = calculateAdvancedMetrics(landmarks);
+    
     progressCallback(95);
     await delay(400); // Final delay for recommendation generation
     
@@ -144,7 +147,9 @@ export async function detectFaceLandmarks(
       scores: faceShapeScores,
       landmarks,
       tips,
-      imageUrl
+      imageUrl,
+      metrics,
+      analysisDate: new Date().toISOString()
     };
     
   } catch (error) {

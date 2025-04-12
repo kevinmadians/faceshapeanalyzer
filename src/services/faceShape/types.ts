@@ -1,4 +1,3 @@
-
 // Common types for face shape analysis
 
 export const FACE_SHAPES = {
@@ -25,5 +24,16 @@ export type FaceShapeResult = {
   landmarks: { x: number, y: number }[];
   tips: FaceShapeTips;
   imageUrl: string;
+  // Add new metrics for advanced analysis
+  metrics?: {
+    faceRatio?: number;
+    jawlineStrength?: number;
+    foreheadWidth?: number;
+    chinProminence?: number;
+    cheekboneWidth?: number;
+    symmetryScore?: number;
+    goldenRatio?: number;
+  };
+  analysisDate?: string; // ISO date when the analysis was performed
 };
 

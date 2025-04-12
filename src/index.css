@@ -1,4 +1,3 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
@@ -126,4 +125,83 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background: #a1a1aa;
+}
+
+/* Shiny button animation effect */
+.shiny-button {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  animation: pulse-glow 2s infinite;
+  z-index: 1;
+}
+
+.shiny-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, 
+    rgba(139, 92, 246, 0.3) 0%, 
+    rgba(139, 92, 246, 0.1) 30%, 
+    rgba(139, 92, 246, 0.3) 60%, 
+    rgba(139, 92, 246, 0.1) 100%);
+  z-index: -1;
+  animation: gradient-shift 3s ease infinite;
+}
+
+.shiny-button::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    to bottom right, 
+    rgba(255, 255, 255, 0) 0%, 
+    rgba(255, 255, 255, 0) 40%, 
+    rgba(255, 255, 255, 0.7) 50%, 
+    rgba(255, 255, 255, 0) 60%, 
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: rotate(45deg);
+  animation: shine-effect 3s infinite;
+  pointer-events: none;
+  z-index: 2;
+}
+
+@keyframes shine-effect {
+  0% {
+    transform: translateX(-100%) translateY(-100%) rotate(45deg);
+  }
+  10%, 100% {
+    transform: translateX(100%) translateY(100%) rotate(45deg);
+  }
+}
+
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes pulse-glow {
+  0% {
+    box-shadow: 0 0 10px 0 rgba(139, 92, 246, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px 5px rgba(139, 92, 246, 0.7);
+  }
+  100% {
+    box-shadow: 0 0 10px 0 rgba(139, 92, 246, 0.5);
+  }
 }

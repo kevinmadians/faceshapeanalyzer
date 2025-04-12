@@ -4,20 +4,19 @@ import { Instagram, Twitter, Facebook, Mail, ExternalLink, Heart, Shield, FileTe
 
 interface FooterProps {
   simplified?: boolean;
-  showResources?: boolean;
 }
 
-const Footer: React.FC<FooterProps> = ({ simplified = false, showResources = false }) => {
+const Footer: React.FC<FooterProps> = ({ simplified = false }) => {
   const year = new Date().getFullYear();
   
   return (
-    <footer className="bg-gradient-to-b from-gray-800 to-gray-900 text-white pt-12 pb-8 mt-auto">
+    <footer className="bg-gradient-to-b from-gray-900 to-black text-white pt-12 pb-8 mt-auto">
       <div className="container px-4 mx-auto">
         {!simplified && (
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
             <div className="lg:col-span-1">
               <div className="flex items-center mb-4">
-                <img src="/face-shape-icon.svg" alt="Face Shape Analyzer" className="h-8 w-8 mr-2" />
+                <img src="/images/logo.png" alt="Face Shape Analyzer" className="h-8 w-auto mr-2" />
                 <h3 className="font-bold text-lg">Face Shape Analyzer</h3>
               </div>
               <p className="text-slate-300 mb-6 text-sm">
@@ -59,34 +58,6 @@ const Footer: React.FC<FooterProps> = ({ simplified = false, showResources = fal
                 </li>
               </ul>
             </div>
-            
-            {showResources && (
-              <div>
-                <h3 className="font-bold text-lg mb-4">Resources</h3>
-                <ul className="space-y-2 text-slate-300">
-                  <li>
-                    <Link to="/hairstyles" className="hover:text-primary transition-colors text-sm">
-                      Hairstyle Recommendations
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/glasses" className="hover:text-primary transition-colors text-sm">
-                      Glasses Finder
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/makeup" className="hover:text-primary transition-colors text-sm">
-                      Makeup Tips
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/blog" className="hover:text-primary transition-colors text-sm">
-                      Style Blog
-                    </Link>
-                  </li>
-                </ul>
-              </div>
-            )}
             
             <div>
               <h3 className="font-bold text-lg mb-4">Legal</h3>

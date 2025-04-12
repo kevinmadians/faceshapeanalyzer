@@ -18,8 +18,8 @@ const Navbar: React.FC<NavbarProps> = ({ showTryItButton = true }) => {
       <div className="container">
         <div className="flex h-16 items-center justify-between">
           <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <div className="w-12 h-12 overflow-hidden rounded-full bg-white border border-primary/20 flex items-center justify-center">
-              <img src="/images/logo.png" alt="Face Shape Analyzer Logo" className="w-10 h-10 object-contain" />
+            <div className="w-auto h-12 flex items-center justify-center">
+              <img src="/images/logo.png" alt="Face Shape Analyzer Logo" className="h-10 object-contain" />
             </div>
             <div className="flex flex-col">
               <h1 className="text-lg font-bold leading-none bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70">

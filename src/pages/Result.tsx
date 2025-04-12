@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
-import FaceShapeResult from '@/components/FaceShapeResult';
+import FaceShapeResult, { FaceShapeResultRef } from '@/components/FaceShapeResult';
 import LoadingScreen from '@/components/LoadingScreen';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
@@ -16,6 +16,7 @@ const Result = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const result = location.state?.result;
+  const faceShapeResultRef = useRef<FaceShapeResultRef>(null);
   
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -65,7 +66,9 @@ const Result = () => {
   const formattedResult = {
     primary: result.primaryShape,
     scores: result.scores,
-    tips: result.tips
+    tips: result.tips,
+    metrics: result.metrics || {},
+    analysisDate: result.analysisDate || new Date().toISOString()
   };
   
   return (
@@ -122,13 +125,16 @@ const Result = () => {
               Try Another Photo
             </Button>
             <Button 
-              onClick={() => document.querySelector('.face-shape-match-analysis')?.scrollIntoView({ behavior: 'smooth' })}
+              onClick={() => {
+                // Scroll to the advanced analysis section
+                document.getElementById('advanced-analysis-section')?.scrollIntoView({ behavior: 'smooth' });
+              }}
               variant="default" 
               size="lg" 
               className="w-full py-6 text-base gap-2 bg-primary hover:bg-primary/90"
             >
               <Award className="h-5 w-5" />
-              View Face Shape Analysis
+              View Advanced Analysis
             </Button>
           </div>
         </div>
@@ -469,6 +475,7 @@ const Result = () => {
         {/* Main FaceShapeResult component with tips */}
         <div id="face-shape-tips">
           <FaceShapeResult 
+            ref={faceShapeResultRef}
             result={formattedResult}
             imageUrl={result.imageUrl}
           />

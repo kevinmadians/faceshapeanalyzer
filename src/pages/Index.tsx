@@ -14,10 +14,12 @@ import {
   resetModel
 } from '@/services/faceShape';
 import FaceShapeIcon from '@/components/icons/FaceShapeIcon';
+import AIStarIcon from '@/components/icons/AIStarIcon';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import SEO from '@/components/SEO';
+import PhotoExampleGuide from '../components/PhotoExampleGuide';
 
 const Index = () => {
   const [selectedImage, setSelectedImage] = useState<{ file: File; url: string } | null>(null);
@@ -209,7 +211,13 @@ const Index = () => {
       
     } catch (error) {
       console.error("Error during face analysis:", error);
-      const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
+      let errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
+      
+      // Check for WebGL texture size error
+      if (errorMessage.includes("texture size") && errorMessage.includes("greater than WebGL maximum")) {
+        errorMessage = "Image resolution too high for processing. Please upload a smaller image (under 4096×4096 pixels) or resize your current image.";
+      }
+      
       setError(`Analysis failed: ${errorMessage}`);
       toast({
         title: "Analysis Failed",
@@ -326,6 +334,10 @@ const Index = () => {
                         clicking here to retry loading the model
                       </Button>, refreshing the page, or using a different browser like Chrome.
                     </>
+                  ) : error.includes("resolution too high") ? (
+                    <>
+                      Try using an image editing app to resize your photo to a smaller resolution before uploading.
+                    </>
                   ) : (
                     "Please try uploading a different photo or refresh the page."
                   )}
@@ -340,6 +352,13 @@ const Index = () => {
                 onImageCleared={handleImageCleared}
               />
               
+              {/* Example Photo Guide - Only show when no image is selected */}
+              {!selectedImage && (
+                <div className="flex justify-center my-4 sm:my-5">
+                  <PhotoExampleGuide />
+                </div>
+              )}
+              
               {/* Analyze Button - Only appears when an image is selected */}
               {selectedImage && (
                 <div className="text-center">
@@ -347,14 +366,19 @@ const Index = () => {
                     onClick={handleAnalyze} 
                     size="lg" 
                     disabled={loading || modelError}
-                    className="w-full gap-2 bg-primary hover:bg-primary/90"
+                    className="w-full gap-2 bg-primary hover:bg-primary/90 relative overflow-hidden shiny-button"
                   >
                     {loading ? "Analyzing..." : "Analyze My Face Shape"}
-                    <ArrowRight className="h-4 w-4" />
+                    <AIStarIcon className="h-4 w-4" />
                   </Button>
                   <p className="text-xs text-muted-foreground mt-2">
                     Your photo is processed in your browser and not stored on any servers
                   </p>
+                  
+                  {/* Example Photo Guide - Show below disclaimer when image is selected */}
+                  <div className="flex justify-center mt-4">
+                    <PhotoExampleGuide />
+                  </div>
                 </div>
               )}
               
@@ -544,7 +568,7 @@ const Index = () => {
                 className="gap-2"
               >
                 Try It Now
-                <ArrowRight className="h-4 w-4" />
+                <AIStarIcon className="h-4 w-4" />
               </Button>
             </div>
           </div>

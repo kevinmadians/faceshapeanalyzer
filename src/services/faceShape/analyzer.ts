@@ -1,4 +1,3 @@
-
 import { FaceShape, FACE_SHAPES } from './types';
 
 // Calculate ratio of width to height
@@ -125,6 +124,79 @@ function calculateChinPointiness(landmarks: { x: number, y: number }[]): number 
   return 1 - Math.min(1, avgDistance * 10);
 }
 
+// Calculate facial symmetry score
+function calculateSymmetryScore(landmarks: { x: number, y: number }[]): number {
+  if (landmarks.length < 10) return 0.8; // Default if not enough landmarks
+  
+  // Find the midpoint of the face
+  let minX = 1, maxX = 0;
+  landmarks.forEach(point => {
+    minX = Math.min(minX, point.x);
+    maxX = Math.max(maxX, point.x);
+  });
+  
+  const midX = (minX + maxX) / 2;
+  
+  // Calculate symmetry by comparing points on opposite sides
+  let symmetrySum = 0;
+  let pointCount = 0;
+  
+  // Group landmarks into pairs that should be symmetrical
+  // This is a simplified approach - in production, would use specific landmark indices
+  for (let i = 0; i < landmarks.length / 2; i++) {
+    const leftPoint = landmarks[i];
+    const rightPoint = landmarks[landmarks.length - 1 - i];
+    
+    // Calculate distance from midline for each point
+    const leftDist = Math.abs(midX - leftPoint.x);
+    const rightDist = Math.abs(rightPoint.x - midX);
+    
+    // Calculate y-position difference
+    const yDiff = Math.abs(leftPoint.y - rightPoint.y);
+    
+    // Difference between distances (perfect symmetry would be 0)
+    const symmetryDiff = Math.abs(leftDist - rightDist) + yDiff;
+    
+    // Convert to a score (higher is better)
+    const pointSymmetry = Math.max(0, 1 - symmetryDiff * 2);
+    
+    symmetrySum += pointSymmetry;
+    pointCount++;
+  }
+  
+  return pointCount > 0 ? symmetrySum / pointCount : 0.8;
+}
+
+// Calculate golden ratio alignment
+function calculateGoldenRatio(landmarks: { x: number, y: number }[]): number {
+  if (landmarks.length < 10) return 0.85; // Default
+  
+  // The golden ratio is approximately 1.618
+  const goldenRatio = 1.618;
+  
+  // For this simplified version, we'll check a few key facial proportions
+  // In production, specific facial landmarks would be used
+  
+  // Find face dimensions
+  let minX = 1, maxX = 0, minY = 1, maxY = 0;
+  landmarks.forEach(point => {
+    minX = Math.min(minX, point.x);
+    maxX = Math.max(maxX, point.x);
+    minY = Math.min(minY, point.y);
+    maxY = Math.max(maxY, point.y);
+  });
+  
+  const faceWidth = maxX - minX;
+  const faceHeight = maxY - minY;
+  
+  // Check how close the face height to width ratio is to the golden ratio
+  const heightToWidthRatio = faceHeight / faceWidth;
+  const heightToWidthScore = Math.max(0, 1 - Math.abs(heightToWidthRatio - goldenRatio) / 1);
+  
+  // Final score - we'd have more measurements in a real implementation
+  return 0.7 + (heightToWidthScore * 0.3);
+}
+
 // Analyze face shape based on landmarks
 export function analyzeFaceShape(landmarks: { x: number, y: number }[]): Record<FaceShape, number> {
   // Calculate key measurements
@@ -133,6 +205,10 @@ export function analyzeFaceShape(landmarks: { x: number, y: number }[]): Record<
   const foreheadToJawRatio = calculateForeheadToJawRatio(landmarks);
   const cheekboneProminence = calculateCheekboneProminence(landmarks);
   const chinPointiness = calculateChinPointiness(landmarks);
+  
+  // Additional metrics for advanced analysis
+  const symmetryScore = calculateSymmetryScore(landmarks);
+  const goldenRatioScore = calculateGoldenRatio(landmarks);
   
   // Calculate scores for each face shape based on these measurements
   const scores: Record<FaceShape, number> = {
@@ -183,4 +259,25 @@ export function determinePrimaryShape(scores: Record<FaceShape, number>): FaceSh
   }
   
   return primaryShape;
+}
+
+// Calculate additional metrics for advanced analysis
+export function calculateAdvancedMetrics(landmarks: { x: number, y: number }[]): {
+  faceRatio: number;
+  jawlineStrength: number;
+  foreheadWidth: number;
+  chinProminence: number;
+  cheekboneWidth: number;
+  symmetryScore: number;
+  goldenRatio: number;
+} {
+  return {
+    faceRatio: calculateWidthToHeightRatio(landmarks),
+    jawlineStrength: calculateJawAngularity(landmarks),
+    foreheadWidth: calculateForeheadToJawRatio(landmarks),
+    chinProminence: calculateChinPointiness(landmarks),
+    cheekboneWidth: calculateCheekboneProminence(landmarks),
+    symmetryScore: calculateSymmetryScore(landmarks),
+    goldenRatio: calculateGoldenRatio(landmarks)
+  };
 }

@@ -9,7 +9,14 @@ For proper favicon support across all devices, you'll need to create and add the
 5. `android-chrome-192x192.png` - For Android devices
 6. `android-chrome-512x512.png` - For Android devices (larger)
 
-## How to Create Favicon Files
+**Note**: Files marked with ✓ are already present in your public directory.
+
+## How to Create the Missing Favicon Files
+
+You need to create/add:
+- favicon.ico
+- favicon-16x16.png
+- favicon-32x32.png
 
 You can generate all these files from a single logo/image using online tools such as:
 
@@ -25,4 +32,4 @@ All these files are already referenced in:
 - `public/site.webmanifest`
 - `public/manifest.json`
 
-Simply add the favicon files to this directory, and they will be automatically used. 
+Simply add the remaining favicon files to this directory before deploying, and they will be automatically used. 

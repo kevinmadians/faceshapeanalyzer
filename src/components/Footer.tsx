@@ -4,9 +4,10 @@ import { Instagram, Twitter, Facebook, Mail, ExternalLink, Heart, Shield, FileTe
 
 interface FooterProps {
   simplified?: boolean;
+  showResources?: boolean;
 }
 
-const Footer: React.FC<FooterProps> = ({ simplified = false }) => {
+const Footer: React.FC<FooterProps> = ({ simplified = false, showResources = false }) => {
   const year = new Date().getFullYear();
   
   return (
@@ -59,33 +60,33 @@ const Footer: React.FC<FooterProps> = ({ simplified = false }) => {
               </ul>
             </div>
             
-            {/* Resources section hidden temporarily - will be expanded in the future
-            <div>
-              <h3 className="font-bold text-lg mb-4">Resources</h3>
-              <ul className="space-y-2 text-slate-300">
-                <li>
-                  <Link to="/hairstyles" className="hover:text-primary transition-colors text-sm">
-                    Hairstyle Recommendations
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/glasses" className="hover:text-primary transition-colors text-sm">
-                    Glasses Finder
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/makeup" className="hover:text-primary transition-colors text-sm">
-                    Makeup Tips
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/blog" className="hover:text-primary transition-colors text-sm">
-                    Style Blog
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            */}
+            {showResources && (
+              <div>
+                <h3 className="font-bold text-lg mb-4">Resources</h3>
+                <ul className="space-y-2 text-slate-300">
+                  <li>
+                    <Link to="/hairstyles" className="hover:text-primary transition-colors text-sm">
+                      Hairstyle Recommendations
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/glasses" className="hover:text-primary transition-colors text-sm">
+                      Glasses Finder
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/makeup" className="hover:text-primary transition-colors text-sm">
+                      Makeup Tips
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/blog" className="hover:text-primary transition-colors text-sm">
+                      Style Blog
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+            )}
             
             <div>
               <h3 className="font-bold text-lg mb-4">Legal</h3>

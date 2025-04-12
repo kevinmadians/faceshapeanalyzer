@@ -34,7 +34,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = memo(({
   
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background/90 backdrop-blur-sm transition-opacity">
-      <div className="w-full max-w-xl px-4 relative">
+      <div className="w-full max-w-2xl px-4 relative">
         {/* Enhanced image with scanning effect */}
         {imageUrl && (
           <div className="relative mb-8 rounded-xl overflow-hidden shadow-xl border border-primary/30 animate-glow-pulse">
@@ -43,7 +43,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = memo(({
               <img 
                 src={imageUrl} 
                 alt="Scanning" 
-                className="w-full h-auto object-contain max-h-[400px] md:max-h-[450px]"
+                className="w-full h-auto object-contain max-h-[450px] md:max-h-[500px]"
                 style={{ 
                   display: 'block',
                   contain: 'layout'
@@ -60,25 +60,38 @@ const LoadingScreen: React.FC<LoadingScreenProps> = memo(({
                 }}
               />
               
-              {/* Enhanced scanning effect with horizontal animation */}
+              {/* Enhanced scanning effect with dual-direction animation */}
               {mounted && (
                 <>
-                  {/* Horizontal scanning beam */}
+                  {/* Primary horizontal scanning beam - more prominent */}
                   <div 
-                    className="absolute top-1/2 left-0 h-3 bg-gradient-to-r from-primary/30 via-primary/80 to-primary/30 animate-scan-horizontal"
+                    className="absolute top-1/2 left-0 right-0 h-4 w-full bg-gradient-to-r from-primary/10 via-primary/90 to-primary/10 animate-scan-horizontal"
                     style={{
-                      boxShadow: '0 0 12px 4px rgba(124, 58, 237, 0.5)',
+                      boxShadow: '0 0 15px 6px rgba(124, 58, 237, 0.6)',
                       transform: 'translateY(-50%) translateZ(0)', // Center it vertically
-                      willChange: 'transform, width, opacity',
+                      willChange: 'transform, opacity',
                       borderRadius: '100px'
+                    }}
+                  />
+                  
+                  {/* Secondary horizontal scanning beam - delayed and reversed */}
+                  <div 
+                    className="absolute top-3/4 left-0 right-0 h-3 w-full bg-gradient-to-r from-primary/10 via-primary/60 to-primary/10"
+                    style={{
+                      boxShadow: '0 0 10px 4px rgba(124, 58, 237, 0.4)',
+                      transform: 'translateY(-50%) translateZ(0)', // Center it vertically
+                      willChange: 'transform, opacity',
+                      borderRadius: '100px',
+                      animation: 'scan-horizontal 4.5s cubic-bezier(0.4, 0, 0.2, 1) infinite',
+                      animationDelay: '1.5s'
                     }}
                   />
                   
                   {/* Additional vertical scan line for more dynamic effect */}
                   <div 
-                    className="absolute left-1/2 top-0 w-2 h-full bg-gradient-to-b from-transparent via-primary/60 to-transparent animate-scan-down"
+                    className="absolute left-1/2 top-0 w-3 h-full bg-gradient-to-b from-transparent via-primary/70 to-transparent animate-scan-down"
                     style={{
-                      boxShadow: '0 0 8px 3px rgba(124, 58, 237, 0.3)',
+                      boxShadow: '0 0 10px 4px rgba(124, 58, 237, 0.4)',
                       transform: 'translateX(-50%) translateZ(0)', // Center it horizontally
                       willChange: 'transform'
                     }}
@@ -93,14 +106,23 @@ const LoadingScreen: React.FC<LoadingScreenProps> = memo(({
                 <div className="relative">
                   {/* Outer pulse ring */}
                   <div 
-                    className="w-20 h-20 rounded-full border-2 border-dashed border-primary/80 animate-pulse-ring"
+                    className="w-24 h-24 rounded-full border-2 border-dashed border-primary/80 animate-pulse-ring"
                     style={{ transform: 'translateZ(0)' }}
                   />
                   
                   {/* Inner ring for more visual interest */}
                   <div 
-                    className="w-16 h-16 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary/60 animate-fade-pulse"
+                    className="w-20 h-20 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary/60 animate-fade-pulse"
                     style={{ transform: 'translate(-50%, -50%) translateZ(0)' }}
+                  />
+                  
+                  {/* Central element */}
+                  <div 
+                    className="w-12 h-12 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/20 animate-fade-pulse"
+                    style={{ 
+                      transform: 'translate(-50%, -50%) translateZ(0)',
+                      animationDuration: '1.2s'
+                    }}
                   />
                 </div>
               </div>
@@ -112,18 +134,19 @@ const LoadingScreen: React.FC<LoadingScreenProps> = memo(({
                 
                 {/* Face shape outline that appears when near completion */}
                 <div 
-                  className="absolute top-1/2 left-1/2 w-48 h-64 rounded-full border border-primary/60 -translate-x-1/2 -translate-y-1/2 animate-fade-pulse"
+                  className="absolute top-1/2 left-1/2 w-56 h-72 rounded-full border-2 border-primary/60 -translate-x-1/2 -translate-y-1/2 animate-fade-pulse"
                   style={{ 
                     transform: 'translate(-50%, -50%) translateZ(0)',
-                    borderRadius: '40% 40% 40% 40% / 50% 50% 40% 40%' // Approximate oval face shape
+                    borderRadius: '40% 40% 40% 40% / 50% 50% 40% 40%', // Approximate oval face shape
+                    boxShadow: '0 0 8px 2px rgba(124, 58, 237, 0.3)'
                   }}
                 />
               </div>
             )}
             
             {/* Percentage overlay on the image */}
-            <div className="absolute top-4 right-4 bg-background/80 backdrop-blur-sm rounded-full w-12 h-12 flex items-center justify-center shadow-lg border border-primary/30">
-              <span className="text-lg font-bold text-primary">{Math.round(progress)}%</span>
+            <div className="absolute top-4 right-4 bg-background/80 backdrop-blur-sm rounded-full w-14 h-14 flex items-center justify-center shadow-lg border border-primary/30">
+              <span className="text-xl font-bold text-primary">{Math.round(progress)}%</span>
             </div>
           </div>
         )}
@@ -147,9 +170,9 @@ const LoadingScreen: React.FC<LoadingScreenProps> = memo(({
         )}
         
         {/* More visually appealing progress bar */}
-        <div className="w-full h-4 bg-accent/80 rounded-full overflow-hidden mb-6 backdrop-blur-sm shadow-inner">
+        <div className="w-full h-5 bg-accent/80 rounded-full overflow-hidden mb-6 backdrop-blur-sm shadow-inner">
           <div 
-            className="h-full bg-gradient-to-r from-lavender via-primary to-violet-500 flex items-center justify-end pr-1"
+            className="h-full bg-gradient-to-r from-lavender via-primary to-violet-500 flex items-center justify-end pr-2"
             style={{ 
               width: `${progress}%`,
               transition: 'width 300ms cubic-bezier(0.4, 0, 0.2, 1)',
@@ -158,7 +181,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = memo(({
             }}
           >
             {progress > 10 && (
-              <span className="text-[10px] text-white font-medium drop-shadow-sm">{Math.round(progress)}%</span>
+              <span className="text-xs text-white font-medium drop-shadow-sm">{Math.round(progress)}%</span>
             )}
           </div>
         </div>

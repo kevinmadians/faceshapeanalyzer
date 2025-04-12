@@ -161,6 +161,41 @@ For multi-line commit messages:
 [ ] Add loading animations during analysis
 [ ] Implement error handling for unclear images
 
+## Completed Task: Footer Resources Section Update
+[X] Hide Resources section in the Footer by default
+[X] Add showResources prop for conditional display
+[X] Maintain existing simplified prop functionality
+[X] Update Footer component for future expandability
+[X] Ensure clean layout without the Resources section
+
+## Completed Task: Loading Screen Enhancement
+[X] Enlarge the preview photo for better visibility
+[X] Implement an engaging horizontal scan animation
+[X] Add a pulsing grid background for visual interest
+[X] Create a dynamic dual-direction scanning effect
+[X] Add percentage indicator overlay on the preview image
+[X] Improve face shape detection indicators
+[X] Add a face outline animation during processing
+[X] Create more detailed progress status messages
+[X] Enhance progress bar with better visual styling
+[X] Optimize animations for performance with GPU acceleration
+[X] Make loading screen fully responsive on all devices
+[X] Increase container max-width for larger preview display
+
+## Completed Task: Mobile Tab Visibility Enhancement
+[X] Improve tabs visibility on mobile devices
+[X] Reduce tab text size on smaller screens
+[X] Add responsive spacing for mobile layouts
+[X] Enhance active tab indication with primary color background
+[X] Ensure proper touch target size for better interaction
+[X] Add whitespace-nowrap to prevent text wrapping
+[X] Reduce icon sizes on mobile for better fit
+[X] Improve responsive text scaling from xs to base size
+[X] Apply proper padding adjustments for mobile screens
+[X] Add touch-manipulation property for better mobile interaction
+[X] Hide tab icons on mobile view for better text visibility
+[X] Add md:inline-block to show icons only on medium and larger screens
+
 ## Completed Task: SEO Implementation
 [X] Add comprehensive SEO meta tags in the document head
 [X] Create reusable SEO component with React Helmet for page-specific SEO
@@ -242,34 +277,6 @@ For multi-line commit messages:
 [X] Center the buttons with proper container width constraints
 [X] Add visible CSS class hooks for scroll functionality
 [X] Increase button size with padding for better mobile UX
-
-## Completed Task: Loading Screen Enhancement
-[X] Enlarge the preview photo for better visibility
-[X] Implement an engaging horizontal scan animation
-[X] Add a pulsing grid background for visual interest
-[X] Create a dynamic dual-direction scanning effect
-[X] Add percentage indicator overlay on the preview image
-[X] Improve face shape detection indicators
-[X] Add a face outline animation during processing
-[X] Create more detailed progress status messages
-[X] Enhance progress bar with better visual styling
-[X] Optimize animations for performance with GPU acceleration
-[X] Make loading screen fully responsive on all devices
-[X] Increase container max-width for larger preview display
-
-## Completed Task: Mobile Tab Visibility Enhancement
-[X] Improve tabs visibility on mobile devices
-[X] Reduce tab text size on smaller screens
-[X] Add responsive spacing for mobile layouts
-[X] Enhance active tab indication with primary color background
-[X] Ensure proper touch target size for better interaction
-[X] Add whitespace-nowrap to prevent text wrapping
-[X] Reduce icon sizes on mobile for better fit
-[X] Improve responsive text scaling from xs to base size
-[X] Apply proper padding adjustments for mobile screens
-[X] Add touch-manipulation property for better mobile interaction
-[X] Hide tab icons on mobile view for better text visibility
-[X] Add md:inline-block to show icons only on medium and larger screens
 
 ## Completed Task: Result Page UI Enhancement
 [X] Update Result page to match homepage styling
@@ -361,6 +368,7 @@ For multi-line commit messages:
   - Add multiple fallback options for different API versions
 - Regular codebase cleanup helps maintain a more organized and efficient project
 - Always check for unused files, directories, and code to reduce technical debt
+- For TensorFlow.js projects deployed on Vercel, use the --legacy-peer-deps flag during installation to resolve dependency conflicts between face-landmarks-detection and its peer dependencies
 
 ## Future Improvements:
 - Consider implementing proper loading of the navbar logo from a CDN rather than a static path

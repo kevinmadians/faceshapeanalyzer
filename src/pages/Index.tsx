@@ -301,8 +301,8 @@ const Index = () => {
                     <div className="overflow-hidden">
                       <img 
                         src="/face-shape-icon.svg" 
-                        alt="Face Shape Analysis" 
-                        className="w-3/4 max-w-xs mx-auto"
+                        alt="Face Shape" 
+                        className="w-3/4 max-w-xs mx-auto h-auto"
                       />
                     </div>
                   </div>
@@ -413,7 +413,7 @@ const Index = () => {
                 <CardHeader className="pb-2 md:pb-4">
                   <div className="flex items-center gap-2 md:gap-4">
                     <div className="bg-lavender p-2 md:p-3 rounded-full">
-                      <FaceShapeIcon className="h-5 w-5 md:h-6 md:w-6 text-primary" color="#6D28D9" />
+                      <img src="/face-shape-icon.svg" className="h-5 w-5 md:h-6 md:w-6" alt="Face shape icon" />
                     </div>
                     <CardTitle className="text-base md:text-lg">Personalized Recommendations</CardTitle>
                   </div>
@@ -428,7 +428,7 @@ const Index = () => {
                 <CardHeader className="pb-2 md:pb-4">
                   <div className="flex items-center gap-2 md:gap-4">
                     <div className="bg-lavender p-2 md:p-3 rounded-full">
-                      <img src="/face-shape-icon.svg" alt="Face Shape" className="h-6 w-6 md:h-8 md:w-8" />
+                      <img src="/face-shape-icon.svg" className="h-6 w-6 md:h-8 md:w-8" alt="Face shape icon" />
                     </div>
                     <CardTitle className="text-base md:text-lg">AI-Powered Analysis</CardTitle>
                   </div>

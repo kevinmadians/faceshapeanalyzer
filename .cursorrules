@@ -415,9 +415,17 @@ For multi-line commit messages:
   - Provide retry mechanisms for when loading fails
   - Track model loading state to prevent duplicate load attempts
   - Add multiple fallback options for different API versions
+  - Include crossOrigin handling for image loading to prevent CORS issues
 - Regular codebase cleanup helps maintain a more organized and efficient project
 - Always check for unused files, directories, and code to reduce technical debt
 - For TensorFlow.js projects deployed on Vercel, use the --legacy-peer-deps flag during installation to resolve dependency conflicts between face-landmarks-detection and its peer dependencies
+- For SPAs (Single Page Applications) with client-side routing that use catch-all redirects in vercel.json:
+  - Google Search Console may flag pages as "Page with redirect" due to the SPA routing setup
+  - Create pre-rendered static versions of key pages for SEO using SSR or SSG approaches
+  - Instead of catch-all rewrites, use more specific route configurations in vercel.json
+  - Add a trailing slash to canonical URLs to avoid potential redirect issues
+  - Consider implementing dynamic rendering for search engines using Puppeteer or Rendertron
+  - Add specific <link rel="preload"> tags for critical resources to improve initial load
 
 ## Future Improvements:
 - Consider implementing proper loading of the navbar logo from a CDN rather than a static path

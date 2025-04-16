@@ -142,12 +142,6 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
       let processedFile = file;
       
       if (file.size > 2 * 1024 * 1024) {
-        toast({
-          title: "Processing image",
-          description: "Optimizing your image for analysis...",
-          variant: "default",
-        });
-        
         // Compress the image if it's too large
         processedFile = await compressImage(file, 1920, 1920, 0.8);
       }

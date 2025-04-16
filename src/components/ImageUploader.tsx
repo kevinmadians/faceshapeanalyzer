@@ -150,15 +150,6 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         
         // Compress the image if it's too large
         processedFile = await compressImage(file, 1920, 1920, 0.8);
-        
-        // Show success toast only if compression actually happened
-        if (processedFile !== file) {
-          toast({
-            title: "Image optimized",
-            description: `Image size reduced from ${(file.size / (1024 * 1024)).toFixed(1)}MB to ${(processedFile.size / (1024 * 1024)).toFixed(1)}MB`,
-            variant: "default",
-          });
-        }
       }
 
       const reader = new FileReader();

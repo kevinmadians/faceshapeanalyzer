@@ -21,7 +21,7 @@ const queryClient = new QueryClient();
 const App = () => (
   <HelmetProvider>
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
+      <BrowserRouter basename="/">
         <TooltipProvider>
           <Routes>
             <Route path="/" element={<Index />} />

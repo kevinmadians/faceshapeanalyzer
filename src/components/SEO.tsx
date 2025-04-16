@@ -26,10 +26,20 @@ const SEO: React.FC<SEOProps> = ({
     ? title 
     : `${title} - Face Shape Analyzer`;
 
-  // Ensure canonical URL is absolute
-  const fullCanonicalUrl = canonicalUrl.startsWith('http') 
-    ? canonicalUrl 
-    : `https://faceshapeanalyzer.net${canonicalUrl.startsWith('/') ? canonicalUrl : `/${canonicalUrl}`}`;
+  // Ensure canonical URL is absolute and has trailing slash
+  const fullCanonicalUrl = (() => {
+    // If already absolute URL
+    if (canonicalUrl.startsWith('http')) {
+      return canonicalUrl.endsWith('/') ? canonicalUrl : `${canonicalUrl}/`;
+    }
+    
+    // If relative URL, make it absolute
+    const baseUrl = 'https://faceshapeanalyzer.net';
+    const path = canonicalUrl.startsWith('/') ? canonicalUrl : `/${canonicalUrl}`;
+    // Ensure path has trailing slash
+    const formattedPath = path.endsWith('/') ? path : `${path}/`;
+    return `${baseUrl}${formattedPath}`;
+  })();
 
   // Ensure image URL is absolute
   const fullImageUrl = imageUrl.startsWith('http') 

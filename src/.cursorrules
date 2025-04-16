@@ -97,6 +97,7 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 - For browser-based ML applications, always provide detailed, user-friendly error messages with clear next steps when something goes wrong.
 - Use React hooks strategically to create more dynamic and responsive components (like useLocation for conditional rendering).
 - When handling image uploads, especially from mobile devices, implement client-side image compression for large files. This reduces processing time, prevents memory issues, and improves user experience. Only compress images that exceed size thresholds (like 2MB) and maintain original quality for those that don't.
+- For Single Page Applications (SPAs) deployed on Vercel, ensure URL consistency by adding the "trailingSlash: true" option in vercel.json to prevent Google Search Console "Page with redirect" issues. Also ensure your canonical URLs in SEO components and sitemap consistently use trailing slashes to avoid redirect chains.
 
 ## Cursor learned
 
@@ -119,8 +120,23 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
   - Convert large PNGs to JPEGs for better compression ratios
   - Only compress images that exceed size thresholds to maintain quality when possible
   - Show loading indicators during compression to improve user experience
+- For SPAs with client-side routing:
+  - Ensure URL consistency by using either all trailing slashes or no trailing slashes
+  - Configure proper rewrites in deployment platforms like Vercel to ensure smooth SPA navigation
+  - Keep sitemap.xml URLs consistent with the URL format used in canonical tags
+  - Address Google Search Console "Page with redirect" warnings promptly to prevent SEO issues
+  - Use the trailingSlash configuration in deployment platforms when available
 
 # Scratchpad
+
+## Completed Task: Google Search Console Redirection Fix
+[X] Analyze redirection issues reported in Google Search Console
+[X] Research common causes of "Page with redirect" issues for SPAs
+[X] Add "trailingSlash: true" configuration to vercel.json to ensure URL consistency
+[X] Update SEO component to ensure all canonical URLs have trailing slashes
+[X] Fix sitemap URLs to include trailing slashes matching canonical URLs
+[X] Update lessons section with findings about SPA redirection best practices
+[X] Document solution for future reference to prevent recurrence
 
 ## Completed Task: Mobile Image Optimization
 [X] Analyze current image processing workflow and identify issues with large mobile uploads

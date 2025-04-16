@@ -10,7 +10,18 @@
     { "source": "/result", "destination": "/index.html" },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
-  "installCommand": "npm install --legacy-peer-deps",
+  "redirects": [
+    { "source": "/index", "destination": "/", "permanent": true },
+    { "source": "/home", "destination": "/", "permanent": true },
+    { "source": "/index.html", "destination": "/", "permanent": true },
+    { "source": "/about/", "destination": "/about", "permanent": true },
+    { "source": "/face-shapes/", "destination": "/face-shapes", "permanent": true },
+    { "source": "/privacy/", "destination": "/privacy", "permanent": true },
+    { "source": "/terms/", "destination": "/terms", "permanent": true },
+    { "source": "/cookies/", "destination": "/cookies", "permanent": true },
+    { "source": "/contact/", "destination": "/contact", "permanent": true },
+    { "source": "/result/", "destination": "/result", "permanent": true }
+  ],
   "headers": [
     {
       "source": "/(.*)",
@@ -46,5 +57,7 @@
         }
       ]
     }
-  ]
+  ],
+  "installCommand": "npm install --legacy-peer-deps",
+  "trailingSlash": true
 } 

@@ -17,6 +17,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
 }) => {
   const [dragActive, setDragActive] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [isCompressing, setIsCompressing] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
@@ -48,7 +49,84 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
     }
   };
 
-  const handleFile = (file: File) => {
+  // Compress an image to a specified size
+  const compressImage = (file: File, maxWidth: number, maxHeight: number, quality: number = 0.7): Promise<File> => {
+    return new Promise((resolve, reject) => {
+      setIsCompressing(true);
+      
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target?.result as string;
+        
+        img.onload = () => {
+          // If image is already small enough, return the original file
+          if (img.width <= maxWidth && img.height <= maxHeight && file.size <= 2 * 1024 * 1024) {
+            setIsCompressing(false);
+            resolve(file);
+            return;
+          }
+          
+          // Create a canvas to draw the resized image
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          
+          // Calculate new dimensions while maintaining aspect ratio
+          if (width > height) {
+            if (width > maxWidth) {
+              height = Math.round(height * (maxWidth / width));
+              width = maxWidth;
+            }
+          } else {
+            if (height > maxHeight) {
+              width = Math.round(width * (maxHeight / height));
+              height = maxHeight;
+            }
+          }
+          
+          canvas.width = width;
+          canvas.height = height;
+          
+          // Draw the resized image on the canvas
+          const ctx = canvas.getContext('2d');
+          ctx?.drawImage(img, 0, 0, width, height);
+          
+          // Convert canvas to Blob
+          canvas.toBlob((blob) => {
+            if (!blob) {
+              setIsCompressing(false);
+              reject(new Error('Canvas to Blob conversion failed'));
+              return;
+            }
+            
+            // Create new File from Blob
+            const compressedFile = new File(
+              [blob], 
+              file.name, 
+              { type: 'image/jpeg', lastModified: Date.now() }
+            );
+            
+            setIsCompressing(false);
+            resolve(compressedFile);
+          }, 'image/jpeg', quality);
+        };
+        
+        img.onerror = () => {
+          setIsCompressing(false);
+          reject(new Error('Error loading image'));
+        };
+      };
+      
+      reader.onerror = () => {
+        setIsCompressing(false);
+        reject(new Error('Error reading file'));
+      };
+    });
+  };
+
+  const handleFile = async (file: File) => {
     // Check if file is an image
     if (!file.type.match("image.*")) {
       toast({
@@ -59,23 +137,45 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
       return;
     }
 
-    // Check file size (limit to 10MB)
-    if (file.size > 10 * 1024 * 1024) {
+    try {
+      // Check if file needs compression (over 2MB or potentially large dimensions)
+      let processedFile = file;
+      
+      if (file.size > 2 * 1024 * 1024) {
+        toast({
+          title: "Processing image",
+          description: "Optimizing your image for analysis...",
+          variant: "default",
+        });
+        
+        // Compress the image if it's too large
+        processedFile = await compressImage(file, 1920, 1920, 0.8);
+        
+        // Show success toast only if compression actually happened
+        if (processedFile !== file) {
+          toast({
+            title: "Image optimized",
+            description: `Image size reduced from ${(file.size / (1024 * 1024)).toFixed(1)}MB to ${(processedFile.size / (1024 * 1024)).toFixed(1)}MB`,
+            variant: "default",
+          });
+        }
+      }
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        const imageUrl = reader.result as string;
+        setPreviewImage(imageUrl);
+        onImageSelected(processedFile, imageUrl);
+      };
+      reader.readAsDataURL(processedFile);
+    } catch (error) {
+      console.error("Error processing image:", error);
       toast({
-        title: "File too large",
-        description: "Please upload an image smaller than 10MB",
+        title: "Error processing image",
+        description: "Please try a different image or refresh the page",
         variant: "destructive",
       });
-      return;
     }
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      const imageUrl = reader.result as string;
-      setPreviewImage(imageUrl);
-      onImageSelected(file, imageUrl);
-    };
-    reader.readAsDataURL(file);
   };
 
   const clearImage = () => {
@@ -124,8 +224,9 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
               onClick={() => inputRef.current?.click()}
               className="mt-1 sm:mt-3"
               size="sm"
+              disabled={isCompressing}
             >
-              Choose Image
+              {isCompressing ? "Processing..." : "Choose Image"}
             </Button>
           </div>
         </div>
@@ -146,6 +247,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
               size="icon"
               variant="secondary"
               className="absolute top-2 right-2 p-1.5 rounded-full shadow-sm z-10"
+              disabled={isCompressing}
             >
               <X className="h-5 w-5" />
             </Button>

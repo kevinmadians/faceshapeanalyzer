@@ -90,6 +90,13 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 
 - You have a python venv in ./venv. Always use (activate) it when doing python development. First, to check whether 'uv' is available, use `which uv`. If that's the case, first activate the venv, and then use `uv pip install` to install packages. Otherwise, fall back to `pip`.
 - Due to Cursor's limit, when you use `git` and `gh` and need to submit a multiline commit message, first write the message in a file, and then use `git commit -F <filename>` or similar command to commit. And then remove the file. Include "[Cursor] " in the commit message and PR title.
+- Don't make users wait for ML models to load before they can interact with the application. Instead, start loading models in the background and allow users to interact with the UI immediately. Only check for model availability when the user actually needs to use it (like when they click "Analyze").
+- Maintain consistent UI elements across pages (like headers, footers, and navigation) to provide a cohesive user experience. Core elements like the navbar and footer should have the same structure and style throughout the application to ensure users always know they're on the same website.
+- Implement robust error handling for ML model loading, including retry mechanisms. Use longer timeouts for model loading (30 seconds rather than 10-15), add proper state management to track loading attempts, and provide clear error messages and retry options when model loading fails.
+- Component extraction is a powerful refactoring technique that dramatically reduces code duplication and improves maintainability.
+- For browser-based ML applications, always provide detailed, user-friendly error messages with clear next steps when something goes wrong.
+- Use React hooks strategically to create more dynamic and responsive components (like useLocation for conditional rendering).
+- When handling image uploads, especially from mobile devices, implement client-side image compression for large files. This reduces processing time, prevents memory issues, and improves user experience. Only compress images that exceed size thresholds (like 2MB) and maintain original quality for those that don't.
 
 ## Cursor learned
 
@@ -97,19 +104,35 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 - When using seaborn styles in matplotlib, use 'seaborn-v0_8' instead of 'seaborn' as the style name due to recent seaborn version changes
 - Use 'gpt-4o' as the model name for OpenAI's GPT-4 with vision capabilities
 - When searching for recent news, use the current year (2025) instead of previous years, or simply use the "recent" keyword to get the latest information
-- When designing modern web interfaces:
-  - Use gradient backgrounds and overlays for visual depth
-  - Implement responsive design with proper spacing and padding
-  - Use consistent iconography and visual hierarchy
-  - Include clear call-to-action buttons
-  - Break content into logical sections with proper headings
-  - Use cards and shadows for content separation
-  - Implement hover effects for interactive elements
-  - Ensure proper contrast and readability
-  - Use semantic HTML structure with proper sectioning
-  - Maintain consistent spacing and alignment
+- When extracting reusable components, always consider adding configurable props for flexibility (e.g., simplified mode, visibility toggles)
+- For ML models in browser applications:
+  - Use longer timeouts (30+ seconds) for model loading operations
+  - Implement proper loading state tracking to prevent duplicate load attempts
+  - Add retry mechanisms with clear user feedback
+  - Provide multiple fallback options for different API versions
+  - Include crossOrigin handling for image loading to prevent CORS issues
+- Regular codebase cleanup significantly improves maintainability and reduces technical debt
+- After component refactoring, always check for and clean up unused imports and state variables
+- For client-side image processing:
+  - Use HTML5 Canvas for efficient image resizing and compression
+  - Maintain aspect ratio when resizing images to prevent distortion
+  - Convert large PNGs to JPEGs for better compression ratios
+  - Only compress images that exceed size thresholds to maintain quality when possible
+  - Show loading indicators during compression to improve user experience
 
 # Scratchpad
+
+## Completed Task: Mobile Image Optimization
+[X] Analyze current image processing workflow and identify issues with large mobile uploads
+[X] Implement client-side image compression feature in ImageUploader component
+[X] Add detection of image dimensions and file size to determine if compression is needed
+[X] Create compression function using HTML5 Canvas for efficient resizing
+[X] Add processing state indicators and feedback for users
+[X] Update error handling for WebGL texture size errors
+[X] Maintain original quality for already optimized images
+[X] Add user feedback with toast notifications for compression process
+[X] Preserve original image filename during compression
+[X] Update Lessons section with learnings about image optimization
 
 ## Current Task: Homepage Redesign
 [X] Analyze current homepage structure and content

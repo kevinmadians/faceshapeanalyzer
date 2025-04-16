@@ -215,15 +215,23 @@ const Index = () => {
       
       // Check for WebGL texture size error
       if (errorMessage.includes("texture size") && errorMessage.includes("greater than WebGL maximum")) {
-        errorMessage = "Image resolution too high for processing. Please upload a smaller image (under 4096×4096 pixels) or resize your current image.";
+        errorMessage = "Image resolution too high for processing. The image will be automatically optimized during the next attempt.";
+        // Let the user know we can handle this
+        toast({
+          title: "Image too large",
+          description: "Click Analyze again to automatically optimize the image for processing.",
+          variant: "default",
+        });
+      } else {
+        // Show toast for other errors
+        toast({
+          title: "Analysis Failed",
+          description: errorMessage,
+          variant: "destructive",
+        });
       }
       
       setError(`Analysis failed: ${errorMessage}`);
-      toast({
-        title: "Analysis Failed",
-        description: errorMessage,
-        variant: "destructive",
-      });
       setLoading(false);
     }
   };

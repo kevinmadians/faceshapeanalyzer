@@ -45,6 +45,10 @@
         {
           "key": "Permissions-Policy",
           "value": "camera=self, microphone=self, geolocation=self"
+        },
+        {
+          "key": "Link",
+          "value": "</>; rel=canonical"
         }
       ]
     },
@@ -59,5 +63,6 @@
     }
   ],
   "installCommand": "npm install --legacy-peer-deps",
-  "trailingSlash": true
+  "trailingSlash": false,
+  "cleanUrls": true
 } 

@@ -482,33 +482,42 @@ const Result = () => {
         </div>
         
         {/* CTA Section */}
-        <div className="rounded-xl p-6 md:p-8 bg-card border shadow-lg text-center max-w-4xl mx-auto mt-16">
-          <h2 className="text-xl md:text-3xl font-bold mb-3 md:mb-4">
-            Ready to explore more styles?
-          </h2>
-          <p className="text-sm md:text-lg text-muted-foreground mb-6 md:mb-8 max-w-xl mx-auto">
-            Analyze another photo to refine your results or try different looks
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button 
-              onClick={handleTryAgain}
-              size="lg"
-              className="gap-2 flex-1 max-w-xs"
-            >
-              <Camera className="h-4 w-4" />
-              Try Another Photo
-            </Button>
-            <Button 
-              asChild
-              variant="outline" 
-              size="lg" 
-              className="gap-2 flex-1 max-w-xs"
-            >
-              <Link to="/face-shapes">
-                <Info className="h-4 w-4" />
-                Explore All Face Shapes
-              </Link>
-            </Button>
+        <div className="rounded-xl p-6 md:p-8 bg-gradient-to-br from-primary/5 via-accent/10 to-primary/5 border shadow-lg text-center max-w-4xl mx-auto mt-16">
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-primary/10 flex items-center justify-center mb-2">
+              <Camera className="w-8 h-8 md:w-10 md:h-10 text-primary" />
+            </div>
+            <h2 className="text-xl md:text-3xl font-bold">
+              Ready to explore more styles?
+            </h2>
+            <p className="text-sm md:text-lg text-muted-foreground mb-2 md:mb-4 max-w-xl">
+              Analyze another photo to refine your results or try different looks
+            </p>
+            <div className="flex flex-col w-full gap-3 max-w-sm">
+              <Button 
+                onClick={handleTryAgain}
+                size="lg"
+                className="w-full py-6 text-base gap-2 bg-primary hover:bg-primary/90 shadow-lg hover:shadow-xl transition-all duration-200 group"
+              >
+                <Camera className="h-5 w-5 group-hover:scale-110 transition-transform" />
+                <span className="font-medium">Try Another Photo</span>
+              </Button>
+              <Button 
+                asChild
+                variant="outline" 
+                size="lg" 
+                className="w-full py-6 text-base gap-2 border-primary/20 hover:bg-primary/5 shadow hover:shadow-md transition-all duration-200 group"
+              >
+                <Link to="/face-shapes">
+                  <Info className="h-5 w-5 text-primary group-hover:scale-110 transition-transform" />
+                  <span className="font-medium">Explore All Face Shapes</span>
+                </Link>
+              </Button>
+            </div>
+            <div className="mt-6 flex items-center gap-2 text-sm text-muted-foreground">
+              <Shield className="h-4 w-4" />
+              <span>Your photos are processed privately and never stored</span>
+            </div>
           </div>
         </div>
       </main>
